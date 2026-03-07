@@ -1,0 +1,54 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT DISTINCT ?disease_name ?ratio_name ?causal_gene ?drug_name ?max_phase
+WHERE {
+  # ========================================================
+  # 1. THE PHARMACOLOGY (Open Targets)
+  # Find advanced clinical drugs and their target genes
+  # ========================================================
+  ?drug a biolink:Drug ;
+        biolink:targets ?gene ;
+        rdfs:label ?drug_name ;
+        mtr:max_clinical_phase ?max_phase .
+
+  FILTER(?max_phase >= 3.0)
+
+  ?gene a mtr:Gene ;
+        rdfs:label ?causal_gene .
+
+  # ========================================================
+  # 2. THE METABOLIC MECHANISM (Local MR Data)
+  # Find metabolite ratios causally controlled by these targets
+  # ========================================================
+  ?causal_test a mtr:CausalAssessment ;
+               mtr:has_exposure ?gene ;
+               mtr:has_outcome ?ratio .
+
+  ?ratio a mtr:MetaboliteRatio ;
+         rdfs:label ?ratio_name .
+
+  # ========================================================
+  # 3. THE GENETIC BRIDGE (Local rQTL Data)
+  # Find the SNPs that specifically regulate these ratios
+  # ========================================================
+  ?rqtl_assoc a biolink:Association ;
+              biolink:has_object ?ratio ;
+              biolink:has_subject ?snp .
+
+  # ========================================================
+  # 4. THE CLINICAL PHENOTYPE (GWAS Catalog)
+  # Do these specific SNPs cause a human disease?
+  # ========================================================
+  ?gwas_assoc a biolink:Association ;
+              biolink:has_subject ?snp ;
+              biolink:has_object ?disease ;
+              mtr:p_value ?gwas_p .
+
+  FILTER(?gwas_p < 0.00000005)
+
+  ?disease rdfs:label ?disease_name .
+}
+ORDER BY DESC(?max_phase) ?disease_name
+LIMIT 20

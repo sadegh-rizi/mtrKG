@@ -1,0 +1,15 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT  ?snp_id ?regulatory_element
+WHERE {
+  # 1. Find SNPs associated with a clinical trait in GWAS
+
+  # 2. Find ENCODE Epigenetic features that the SNP physically overlaps
+  ?snp biolink:overlaps ?reg_node .
+  ?reg_node rdfs:label ?regulatory_element .
+
+  BIND(REPLACE(STR(?snp), "^.*/", "") AS ?snp_id)
+}
+ORDER BY ?disease_name

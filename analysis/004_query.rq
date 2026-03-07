@@ -1,0 +1,52 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT DISTINCT
+  ?ratio_name
+  ?causal_gene_name
+  ?interacting_gene_name
+  ?interaction_score
+  ?drug_name
+  ?clinical_phase
+WHERE {
+  # ========================================================
+  # 1. THE BIOMARKER (Local MR Data)
+  # Find a gene that causally drives a metabolic ratio
+  # ========================================================
+  ?causal_assessment a mtr:CausalAssessment ;
+                     mtr:has_outcome ?ratio ;
+                     mtr:has_exposure ?causal_gene .
+
+  ?ratio a mtr:MetaboliteRatio ; rdfs:label ?ratio_name .
+  ?causal_gene a mtr:Gene ; rdfs:label ?causal_gene_name .
+
+  # ========================================================
+  # 2. THE NETWORK BRIDGE (STRING Database)
+  # Find proteins that physically interact with the causal gene
+  # ========================================================
+  ?ppi_assoc a biolink:Association ;
+             biolink:category biolink:ProteinProteinInteraction ;
+             biolink:has_subject ?causal_gene ;
+             biolink:has_object ?interacting_gene ;
+             mtr:interaction_score ?interaction_score .
+
+  ?interacting_gene a mtr:Gene ; rdfs:label ?interacting_gene_name .
+
+  # Only trust high-confidence STRING interactions (score > 0.7 out of 1.0)
+  FILTER(?interaction_score > 0.7)
+
+  # ========================================================
+  # 3. PHARMACOLOGY (Open Targets)
+  # Find drugs that target the *interacting* protein, not the original one
+  # ========================================================
+  ?drug a biolink:Drug ;
+        biolink:targets ?interacting_gene ;
+        rdfs:label ?drug_name ;
+        mtr:max_clinical_phase ?clinical_phase .
+
+  # Let's only look for drugs that are highly developed (Phase 3 or 4)
+  FILTER(?clinical_phase >= 3.0)
+}
+ORDER BY DESC(?interaction_score) DESC(?clinical_phase)
+LIMIT 20
