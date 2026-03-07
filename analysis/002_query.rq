@@ -1,0 +1,38 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT
+  ?snp_id
+  (MIN(?p_value) AS ?strongest_gwas_p_value)
+  (GROUP_CONCAT(DISTINCT ?trait_name; separator=" | ") AS ?associated_clinical_traits)
+  (GROUP_CONCAT(DISTINCT ?ratio_name; separator=" | ") AS ?driven_metabolic_ratios)
+WHERE {
+  # 1. GWAS Catalog Associations (Clinical)
+  ?gwas_assoc a biolink:Association ;
+              prov:wasGeneratedBy "EBI_GWAS_REST_API_v2" ;
+              biolink:has_subject ?snp ;
+              biolink:has_object ?trait ;
+              mtr:p_value ?p_value .
+
+  ?trait rdfs:label ?trait_name .
+
+  # Strict significance filter
+  FILTER(?p_value < 0.00000005)
+
+  # 2. Local rQTL Associations (Metabolic)
+  # We require the SNP to also be linked to at least one ratio in your local data
+  ?rqtl_assoc a biolink:Association ;
+              biolink:has_subject ?snp ;
+              biolink:has_object ?ratio .
+
+  ?ratio a mtr:MetaboliteRatio ;
+         rdfs:label ?ratio_name .
+
+  # Clean the SNP URI
+  BIND(REPLACE(STR(?snp), "^.*/", "") AS ?snp_id)
+}
+# 3. Group the results by the specific SNP
+GROUP BY ?snp_id
+ORDER BY ?strongest_gwas_p_value
