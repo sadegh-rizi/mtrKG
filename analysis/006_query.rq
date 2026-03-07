@@ -1,0 +1,25 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT DISTINCT ?gene_name ?metabolite_name ?pathway_name
+WHERE {
+  # 1. Find a causal relationship from your local MR data
+  ?causal_test a mtr:CausalAssessment ;
+               mtr:has_exposure ?gene ;
+               mtr:has_outcome ?ratio .
+
+  # 2. Get the numerator metabolite of that ratio
+  ?ratio mtr:has_numerator ?metabolite .
+
+  ?gene rdfs:label ?gene_name .
+  ?metabolite rdfs:label ?metabolite_name .
+
+  # 3. THE BIOLOGICAL VALIDATION:
+  # Check if BOTH the Gene AND the Metabolite participate in the EXACT SAME pathway
+  ?gene biolink:participates_in ?pathway .
+  ?metabolite biolink:participates_in ?pathway .
+
+  ?pathway rdfs:label ?pathway_name .
+}
+ORDER BY ?pathway_name
