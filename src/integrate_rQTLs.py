@@ -106,10 +106,9 @@ def add_rqtl_to_graph(json_file_path, g):
 
             # OBAN Association Node (SNP -> Ratio)
             assoc_node = MTR[f"Assoc_{rsid}_{ratio_id}"]
-            g.add((assoc_node, RDF.type, OBAN.association))
-            g.add((assoc_node, OBAN.has_subject, snp_node))
-            g.add((assoc_node, OBAN.has_object, ratio_node))
-
+            g.add((assoc_node, RDF.type, BIOLINK.Association))
+            g.add((assoc_node, BIOLINK.has_subject, snp_node))
+            g.add((assoc_node, BIOLINK.has_object, ratio_node))
             # Extract full Summary Statistics
             stats = details.get('summary_statistics', {})
             add_safe_literal(g, assoc_node, MTR.p_value, stats.get('p_value'), XSD.float)
@@ -197,10 +196,11 @@ def add_rqtl_to_graph(json_file_path, g):
                             g.add((exposure_node, RDF.type, MTR.Protein))
                         else:
                             # FinnGen, MR-Link, Yang (These are typically complex traits/diseases)
-                            exposure_node = MTR[f"Trait_{safe_exp}"]
-                            g.add((exposure_node, RDF.type, MTR.ComplexTrait))
-
-                        g.add((exposure_node, RDFS.label, Literal(exposure_name)))
+                            # FinnGen, MR-Link, Yang (Harmonized to match GWAS Catalog)
+                            # We use EFO and BIOLINK.Disease so they overlap perfectly with GWAS!
+                            exposure_node = EFO[f"Custom_{safe_exp}"]
+                            g.add((exposure_node, RDF.type, BIOLINK.Disease))
+                            g.add((exposure_node, RDFS.label, Literal(exposure_name)))
 
                         # C. Create the Causal Assessment Node
                         assessment_id = f"Causal_{dataset_name}_{safe_exp}_to_{target_level}_{ratio_id}"

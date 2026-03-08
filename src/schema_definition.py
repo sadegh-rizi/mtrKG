@@ -130,5 +130,108 @@ def build_schema(g):
     g.add((OBAN.has_subject, OWL.equivalentProperty, BIOLINK.has_subject))
     g.add((OBAN.has_object, OWL.equivalentProperty, BIOLINK.has_object))
 
+    # ==========================================
+    # STRING DB: PROTEIN-PROTEIN INTERACTIONS
+    # ==========================================
+
+    # 1. Define the Interaction Category Class
+    g.add((BIOLINK.ProteinProteinInteraction, RDF.type, OWL.Class))
+    g.add((BIOLINK.ProteinProteinInteraction, RDFS.subClassOf, BIOLINK.Association))
+    g.add((BIOLINK.ProteinProteinInteraction, RDFS.label, Literal("Protein-Protein Interaction")))
+
+    # 2. Define the Direct Interaction Property
+    g.add((BIOLINK.interacts_with, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.interacts_with, RDFS.label, Literal("interacts with")))
+    g.add((BIOLINK.interacts_with, RDFS.domain, MTR.Gene))  # From a Gene/Protein
+    g.add((BIOLINK.interacts_with, RDFS.range, MTR.Gene))  # To another Gene/Protein
+
+    # 3. Define the Interaction Score Property (Datatype)
+    g.add((MTR.interaction_score, RDF.type, OWL.DatatypeProperty))
+    g.add((MTR.interaction_score, RDFS.label, Literal("STRING interaction score")))
+    # Assuming you applied the ontology alignment, binding to BIOLINK.Association covers OBAN too
+    g.add((MTR.interaction_score, RDFS.domain, BIOLINK.Association))
+    g.add((MTR.interaction_score, RDFS.range, XSD.float))
+
+    # ==========================================
+    # EPIGENETICS (EWAS): CLASSES & PROPERTIES
+    # ==========================================
+
+    # 1. Define the Genomic Entity Class (for CpG Methylation Sites)
+    g.add((BIOLINK.GenomicEntity, RDF.type, OWL.Class))
+    g.add((BIOLINK.GenomicEntity, RDFS.label, Literal("Genomic Entity")))
+    g.add((BIOLINK.GenomicEntity, RDFS.comment,
+           Literal("A structural or functional feature of a genome, such as a CpG site.")))
+
+    # 2. Define the Phenotypic Feature Class (for Environmental Traits / Biomarkers)
+    # Note: You might already have biolink:Disease, this broadens it to non-disease traits like BMI or smoking
+    g.add((BIOLINK.PhenotypicFeature, RDF.type, OWL.Class))
+    g.add((BIOLINK.PhenotypicFeature, RDFS.label, Literal("Phenotypic Feature")))
+
+    # 3. Define the 'regulates' Object Property
+    g.add((BIOLINK.regulates, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.regulates, RDFS.label, Literal("regulates")))
+
+    # Strict typing: Only Genomic Entities (CpGs) can regulate Genes in this context
+    g.add((BIOLINK.regulates, RDFS.domain, BIOLINK.GenomicEntity))
+    g.add((BIOLINK.regulates, RDFS.range, MTR.Gene))
+
+    # Define the overlaps property for Genomic Entities
+    g.add((BIOLINK.overlaps, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.overlaps, RDFS.label, Literal("overlaps with")))
+    g.add((BIOLINK.overlaps, RDFS.domain, MTR.SNP))
+    g.add((BIOLINK.overlaps, RDFS.range, BIOLINK.GenomicEntity))
+
+    # ==========================================
+    # PATHWAYS (REACTOME): CLASSES & PROPERTIES
+    # ==========================================
+
+    # 1. Define the Pathway Class
+    g.add((BIOLINK.Pathway, RDF.type, OWL.Class))
+    g.add((BIOLINK.Pathway, RDFS.label, Literal("Biological Pathway")))
+
+    # 2. Define the 'participates_in' Object Property
+    g.add((BIOLINK.participates_in, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.participates_in, RDFS.label, Literal("participates in")))
+
+    # Strict typing: Only Genes/Proteins can participate in Pathways
+    g.add((BIOLINK.participates_in, RDFS.domain, MTR.Gene))
+    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.Pathway))
+
+    # ==========================================
+    # PATHWAYS (REACTOME): CLASSES & PROPERTIES
+    # ==========================================
+
+    # 1. Define a Parent Class for both Genes and Metabolites
+    g.add((BIOLINK.MolecularEntity, RDF.type, OWL.Class))
+    g.add((MTR.Gene, RDFS.subClassOf, BIOLINK.MolecularEntity))
+    g.add((MTR.Metabolite, RDFS.subClassOf, BIOLINK.MolecularEntity))
+
+    # 2. Define the Pathway Class
+    g.add((BIOLINK.Pathway, RDF.type, OWL.Class))
+    g.add((BIOLINK.Pathway, RDFS.label, Literal("Biological Pathway")))
+
+    # 3. Define the 'participates_in' Object Property
+    g.add((BIOLINK.participates_in, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.participates_in, RDFS.label, Literal("participates in")))
+
+    # Update Domain: Now BOTH Genes and Metabolites can participate in pathways!
+    g.add((BIOLINK.participates_in, RDFS.domain, BIOLINK.MolecularEntity))
+    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.Pathway))
+
+    # 1. Define the Classes
+    g.add((BIOLINK.CellularComponent, RDF.type, OWL.Class))
+    g.add((BIOLINK.CellularComponent, RDFS.label, Literal("Cellular Component")))
+
+    g.add((BIOLINK.GrossAnatomicalStructure, RDF.type, OWL.Class))
+    g.add((BIOLINK.GrossAnatomicalStructure, RDFS.label, Literal("Tissue or Biofluid")))
+
+    # 2. Define the 'located_in' Object Property
+    g.add((BIOLINK.located_in, RDF.type, OWL.ObjectProperty))
+    g.add((BIOLINK.located_in, RDFS.label, Literal("located in")))
+
+    # Domain is the Molecular Entity (Metabolite or Protein)
+    g.add((BIOLINK.located_in, RDFS.domain, BIOLINK.MolecularEntity))
+    # We won't strictly enforce a single range here, as it could be a Cell Component OR Tissue
+
 
     return g
