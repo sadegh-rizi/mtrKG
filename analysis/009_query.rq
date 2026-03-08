@@ -1,0 +1,49 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT DISTINCT
+  ?disease
+  ?snp_id
+  ?metabolite_ratio
+  ?causal_gene
+  ?biological_pathway
+WHERE {
+  # ---------------------------------------------------------
+  # 1. CLINICAL: What complex disease is caused by a genetic variant?
+  # ---------------------------------------------------------
+  ?gwas_edge a biolink:Association ;
+             biolink:has_subject ?snp ;
+             biolink:has_object ?disease_node .
+
+  ?disease_node a biolink:Disease ;
+                rdfs:label ?disease .  # <--- FIXED THIS TO MATCH SELECT
+FILTER(!CONTAINS(LCASE(?disease), "particle size"))
+  # ---------------------------------------------------------
+  # 2. METABOLIC: What metabolite ratio does that EXACT SAME variant disrupt?
+  # ---------------------------------------------------------
+  ?rqtl_edge a biolink:Association ;
+             biolink:has_subject ?snp ;
+             biolink:has_object ?ratio_node .
+
+  ?ratio_node rdfs:label ?metabolite_ratio .
+
+  # ---------------------------------------------------------
+  # 3. GENOMIC: What specific gene was proven via MR to drive this ratio?
+  # ---------------------------------------------------------
+  ?causal_edge a mtr:CausalAssessment ;
+               mtr:has_exposure ?gene_node ;
+               mtr:has_outcome ?ratio_node .
+
+  ?gene_node rdfs:label ?causal_gene .
+
+  # ---------------------------------------------------------
+  # 4. MECHANISTIC: What biological pathway is that gene a part of?
+  # ---------------------------------------------------------
+  ?gene_node biolink:participates_in ?pathway_node .
+  ?pathway_node rdfs:label ?biological_pathway .
+
+  # Clean up the SNP URI so it looks pretty in the final table (e.g., "rs12345")
+  BIND(REPLACE(STR(?snp), "^.*/", "") AS ?snp_id)
+}
+ORDER BY ?disease

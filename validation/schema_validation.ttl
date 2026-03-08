@@ -1,0 +1,173 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix mtr: <https://metabolite-ratio-app.unil.ch/rqtl/> .
+@prefix biolink: <https://w3id.org/biolink/vocab/> .
+@prefix oban: <http://purl.org/oban/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# ==========================================
+# 1. METABOLITE RATIO SHAPE
+# ==========================================
+<#MetaboliteRatioShape> a sh:NodeShape ;
+    sh:targetClass mtr:MetaboliteRatio ;
+
+    # Rule 1: Every ratio MUST have a string label
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+
+    # Rule 2: Exactly ONE numerator pointing to a mtr:Metabolite
+    sh:property [
+        sh:path mtr:has_numerator ;
+        sh:class mtr:Metabolite ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    # Rule 3: Exactly ONE denominator pointing to a mtr:Metabolite
+    sh:property [
+        sh:path mtr:has_denominator ;
+        sh:class mtr:Metabolite ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+# ==========================================
+# 2. CAUSAL ASSESSMENT SHAPE (Mendelian Randomization)
+# ==========================================
+<#CausalAssessmentShape> a sh:NodeShape ;
+    sh:targetClass mtr:CausalAssessment ;
+
+    # Rule 4: Must specify the dataset source (eQTL, pQTL, etc.)
+    sh:property [
+        sh:path mtr:dataset_source ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+
+    # Rule 5: If an IVW p-value exists, it strictly MUST be a float
+    sh:property [
+        sh:path mtr:p_ivw ;
+        sh:datatype xsd:float ;
+    ] ;
+
+    # Rule 6: Colocalization H4 probability must be between 0.0 and 1.0
+    sh:property [
+        sh:path mtr:coloc_h4 ;
+        sh:datatype xsd:float ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+    ] .
+
+# ==========================================
+# 3. GENETIC ASSOCIATION SHAPE (HARMONIZED)
+# ==========================================
+<#AssociationShape> a sh:NodeShape ;
+    sh:targetClass biolink:Association, oban:association ;
+
+    sh:property [
+        sh:path [ sh:alternativePath ( biolink:has_subject oban:has_subject ) ] ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path [ sh:alternativePath ( biolink:has_object oban:has_object ) ] ;
+        sh:minCount 1 ;
+    ] ;
+
+    # FIX: Make p-value optional by removing sh:minCount 1
+    sh:property [
+        sh:path mtr:p_value ;
+        sh:datatype xsd:float ;
+    ] .
+# ==========================================
+# 4. DRUG SHAPE (ChEMBL / Open Targets)
+# ==========================================
+<#DrugShape> a sh:NodeShape ;
+    sh:targetClass biolink:Drug ;
+
+    sh:property [
+        sh:path mtr:max_clinical_phase ;
+        sh:datatype xsd:float ;
+    ] ;
+
+    # Rule 9: If it's a drug, it must have at least one text label
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+    ] .
+
+# ==========================================
+# 5. METABOLITE SHAPE (ChEBI / HMDB)
+# ==========================================
+<#MetaboliteShape> a sh:NodeShape ;
+    sh:targetClass mtr:Metabolite ;
+
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+    ] ;
+
+    # Rule 10: Ensure HMDB locations correctly point to Anatomical structures
+    sh:property [
+        sh:path biolink:located_in ;
+        sh:or (
+            [ sh:class biolink:GrossAnatomicalStructure ]
+            [ sh:class biolink:CellularComponent ]
+        ) ;
+    ] .
+
+# ==========================================
+# 6. GENE & PATHWAY SHAPE (Reactome)
+# ==========================================
+<#GeneShape> a sh:NodeShape ;
+    sh:targetClass mtr:Gene ;
+
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+    ] ;
+
+    # Rule 11: Genes participating in something must point to a Pathway or Reaction
+    sh:property [
+        sh:path biolink:participates_in ;
+        sh:or (
+            [ sh:class biolink:Pathway ]
+            [ sh:class biolink:MolecularActivity ]
+        ) ;
+    ] .
+
+# ==========================================
+# 7. BIOCHEMISTRY SHAPE (Rhea)
+# ==========================================
+<#MolecularActivityShape> a sh:NodeShape ;
+    sh:targetClass biolink:MolecularActivity ;
+
+    # Rule 12: Every Rhea reaction must have its chemical equation as a label
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+    ] ;
+
+    # Rule 13: Must maintain provenance back to Rhea
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:hasValue <https://www.rhea-db.org/> ;
+    ] .
+
+# ==========================================
+# 8. DISEASE SHAPE (GWAS / FinnGen)
+# ==========================================
+<#DiseaseShape> a sh:NodeShape ;
+    sh:targetClass biolink:Disease ;
+
+    # Rule 14: Ensure the NLP regex didn't break labels
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+    ] .

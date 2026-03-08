@@ -45,10 +45,10 @@ WHERE {
               biolink:has_subject ?snp ;
               biolink:has_object ?disease ;
               mtr:p_value ?gwas_p .
+  ?disease a biolink:Disease ;
+           rdfs:label ?disease_name .
 
   FILTER(?gwas_p < 0.00000005)
 
-  ?disease rdfs:label ?disease_name .
 }
 ORDER BY DESC(?max_phase) ?disease_name
-LIMIT 20

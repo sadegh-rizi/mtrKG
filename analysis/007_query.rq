@@ -1,0 +1,55 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT
+  ?disease_name
+  ?ratio_name
+  ?numerator_name
+  (GROUP_CONCAT(DISTINCT ?num_tissue; separator=" | ") AS ?numerator_tissues)
+  ?denominator_name
+  (GROUP_CONCAT(DISTINCT ?den_tissue; separator=" | ") AS ?denominator_tissues)
+WHERE {
+  # 1. Find the Clinical Trait / Disease
+  ?gwas_assoc a biolink:Association ;
+              biolink:has_subject ?snp ;
+              biolink:has_object ?disease ;
+              mtr:p_value ?gwas_p .
+
+  ?disease a biolink:Disease ;
+           rdfs:label ?disease_name .
+
+  FILTER(?gwas_p < 0.05)
+
+  # 2. Find the Metabolite Ratio linked to that SNP
+  ?rqtl_assoc a biolink:Association ;
+              biolink:has_subject ?snp ;
+              biolink:has_object ?ratio .
+
+  ?ratio a mtr:MetaboliteRatio ;
+         rdfs:label ?ratio_name .
+
+  # 3. Extract BOTH Numerator and Denominator
+  ?ratio mtr:has_numerator ?numerator .
+  ?numerator rdfs:label ?numerator_name .
+
+  ?ratio mtr:has_denominator ?denominator .
+  ?denominator rdfs:label ?denominator_name .
+
+  # 4. Get Numerator Tissues (OPTIONAL prevents dropping rows if HMDB data is missing)
+  OPTIONAL {
+    ?numerator biolink:located_in ?num_tissue_node .
+    ?num_tissue_node a biolink:GrossAnatomicalStructure ;
+                     rdfs:label ?num_tissue .
+  }
+
+  # 5. Get Denominator Tissues
+  OPTIONAL {
+    ?denominator biolink:located_in ?den_tissue_node .
+    ?den_tissue_node a biolink:GrossAnatomicalStructure ;
+                     rdfs:label ?den_tissue .
+  }
+}
+# 6. Group everything together so each Ratio only gets ONE row
+GROUP BY ?disease_name ?ratio_name ?numerator_name ?denominator_name
+ORDER BY ?disease_name ?ratio_name

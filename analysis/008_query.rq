@@ -1,0 +1,24 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+SELECT DISTINCT
+  ?ratio_name
+  ?numerator_name
+  ?denominator_name
+  ?reaction_equation
+WHERE {
+  ?ratio a mtr:MetaboliteRatio ;
+         rdfs:label ?ratio_name ;
+         mtr:has_numerator ?numerator ;
+         mtr:has_denominator ?denominator .
+
+  ?numerator rdfs:label ?numerator_name .
+  ?denominator rdfs:label ?denominator_name .
+
+  ?numerator biolink:participates_in ?reaction .
+  ?denominator biolink:participates_in ?reaction .
+
+  ?reaction a biolink:MolecularActivity ;
+            rdfs:label ?reaction_equation .
+}
