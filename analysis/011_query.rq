@@ -1,0 +1,23 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+
+SELECT ?snp ?causalGeneLabel ?ratioLabel ?p_value ?dataset
+WHERE {
+    # 1. Find the Causal Assessment Node
+    ?assessment a mtr:CausalAssessment ;
+                mtr:associated_variant ?snp ;
+                mtr:has_exposure ?geneNode ;
+                mtr:has_outcome ?ratioNode ;
+                mtr:p_ivw ?p_value ;
+                mtr:dataset_source ?dataset .
+
+    # 2. Extract Human-Readable Labels
+    ?geneNode rdfs:label ?causalGeneLabel .
+    ?ratioNode rdfs:label ?ratioLabel .
+    # 3. Filter for high-confidence Mendelian Randomization results
+    FILTER(?p_value < 0.05)
+}
+ORDER BY ?p_value
+LIMIT 10

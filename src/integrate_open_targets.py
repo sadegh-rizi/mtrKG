@@ -1,10 +1,24 @@
 import requests
 import time
 import urllib.parse
+import logging
 from rdflib import Graph, Literal, RDF, URIRef
 from rdflib.namespace import RDFS, XSD
 # Assuming your schema defines MTR, BIOLINK, EFO, CHEMBL, PROV, OBAN
-from src.schema_definition import *
+from schema_definition import *
+
+# ==========================================
+# 1. SETUP LOGGING
+# ==========================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("../output/opentargets_integration.log", mode='w'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 OPENTARGETS_API = "https://api.platform.opentargets.org/api/v4/graphql"
 
@@ -80,7 +94,7 @@ def fetch_opentargets_data(gene_symbol):
             return response.json()
         return None
     except Exception as e:
-        print(f"Open Targets API Error: {e}")
+        logger.error(f"Open Targets API Error: {e}")
         return None
 
 
@@ -89,18 +103,18 @@ def enrich_graph_with_opentargets(g, max_genes=5):
     Scans the graph for causal Genes, queries Open Targets,
     and adds the updated schema data to the graph.
     """
-    print("\n--- Starting Open Targets Integration ---")
+    logger.info("--- Starting Open Targets Integration ---")
 
     # Find all Genes currently in the graph
     gene_nodes = list(g.subjects(RDF.type, MTR.Gene))
-    print(f"Found {len(gene_nodes)} causal Genes in the local graph.")
+    logger.info(f"Found {len(gene_nodes)} causal Genes in the local graph.")
 
     genes_to_process = gene_nodes[:max_genes]
 
     for i, gene_node in enumerate(genes_to_process):
         gene_symbol = str(gene_node).split('/')[-1].strip()
 
-        print(f"[{i + 1}/{len(genes_to_process)}] Fetching OT data for {gene_symbol}...")
+        logger.info(f"[{i + 1}/{len(genes_to_process)}] Fetching OT data for {gene_symbol}...")
 
         data = fetch_opentargets_data(gene_symbol)
 
@@ -125,7 +139,7 @@ def enrich_graph_with_opentargets(g, max_genes=5):
             # ==========================================
             safety_liabilities = target_obj.get('safetyLiabilities')
             if safety_liabilities:
-                print(f"   -> Found {len(safety_liabilities)} safety liabilities!")
+                logger.info(f"   -> Found {len(safety_liabilities)} safety liabilities!")
                 for liability in safety_liabilities:
                     event_name = liability.get('event')
                     event_id = liability.get('eventId')
@@ -155,7 +169,7 @@ def enrich_graph_with_opentargets(g, max_genes=5):
             if 'knownDrugs' in target_obj and target_obj['knownDrugs']:
                 drug_rows = target_obj['knownDrugs'].get('rows', [])
                 if drug_rows:
-                    print(f"   -> Found {len(drug_rows)} known drugs!")
+                    logger.info(f"   -> Found {len(drug_rows)} known drugs!")
                     for row in drug_rows:
                         drug_info = row['drug']
                         drug_node = CHEMBL[drug_info['id']]
@@ -172,7 +186,7 @@ def enrich_graph_with_opentargets(g, max_genes=5):
             assoc_diseases = target_obj.get('associatedDiseases')
             if assoc_diseases and assoc_diseases.get('rows'):
                 disease_rows = assoc_diseases['rows']
-                print(f"   -> Found {len(disease_rows)} top associated diseases!")
+                logger.info(f"   -> Found {len(disease_rows)} top associated diseases!")
 
                 for row in disease_rows:
                     disease_info = row.get('disease', {})
@@ -188,9 +202,12 @@ def enrich_graph_with_opentargets(g, max_genes=5):
 
                         # Create an OBAN Association Node linking Gene -> Disease
                         assoc_node = MTR[f"OT_Assoc_{gene_symbol}_{disease_id}"]
-                        g.add((assoc_node, RDF.type, OBAN.association))
-                        g.add((assoc_node, OBAN.has_subject, gene_node))
-                        g.add((assoc_node, OBAN.has_object, disease_node))
+                        # Ensure the gene has a label (Fixing the previous SHACL error!)
+                        g.add((gene_node, RDFS.label, Literal(gene_symbol, datatype=XSD.string)))
+
+                        g.add((assoc_node, RDF.type, BIOLINK.Association))
+                        g.add((assoc_node, BIOLINK.has_subject, gene_node))
+                        g.add((assoc_node, BIOLINK.has_object, disease_node))
                         g.add((assoc_node, PROV.wasDerivedFrom, URIRef("https://platform.opentargets.org/")))
 
                         # Extract the 'genetics' datasource score if it exists
@@ -199,9 +216,9 @@ def enrich_graph_with_opentargets(g, max_genes=5):
                                 g.add((assoc_node, MTR.ot_genetics_score, Literal(ds.get('score'), datatype=XSD.float)))
 
         else:
-            print(f"   -> {gene_symbol} not found in Open Targets database.")
+            logger.warning(f"   -> {gene_symbol} not found in Open Targets database.")
 
         time.sleep(0.1)  # Be polite to the API
 
-    print("\n--- Open Targets Integration Complete ---")
+    logger.info("--- Open Targets Integration Complete ---")
     return g

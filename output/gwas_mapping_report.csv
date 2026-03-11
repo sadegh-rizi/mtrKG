@@ -1,366 +1,868 @@
 SNP,Status,Associations_Found,Error_Message
-rs2631371,Unmapped,0,No data returned
-rs28415528,Mapped,10,
-rs174564,Mapped,10,
-rs11743851,Mapped,4,
-rs273913,Mapped,6,
-rs151154986,Mapped,10,
-rs11578832,Mapped,4,
-rs12410006,Unmapped,0,No data returned
-rs1177442,Mapped,10,
-rs7412,Mapped,10,
-rs77420750,Mapped,7,
-rs62129966,Mapped,10,
-rs964184,Mapped,10,
-rs56165099,Mapped,10,
-rs11211402,Mapped,2,
-rs35818294,Mapped,10,
-rs3752246,Mapped,10,
-rs1165196,Mapped,10,
-rs1799822,Mapped,6,
-rs35630725;rs1890452,Unmapped,0,No data returned
-rs166635,Unmapped,0,No data returned
-rs1047891,Mapped,10,
-rs13384756,Mapped,4,
-rs17101394,Mapped,10,
-rs662138,Mapped,10,
-rs174566,Mapped,10,
-rs7541058,Mapped,2,
-rs680379,Mapped,10,
-rs7513363,Mapped,7,
-rs324420,Mapped,10,
-rs11045883,Mapped,1,
-rs2066183,Unmapped,0,No data returned
-rs1885041,Mapped,10,
-rs75406471,Mapped,10,
-rs4881413,Unmapped,0,No data returned
-rs2151901,Unmapped,0,No data returned
-rs10076701,Mapped,4,
-rs273903,Unmapped,0,No data returned
-rs12208357,Mapped,10,
-rs10018448,Mapped,10,
-rs174546,Mapped,10,
-rs273917,Mapped,2,
-rs174560,Mapped,10,
-rs7157785,Mapped,10,
-rs364585,Mapped,10,
-rs4507958,Mapped,10,
-rs1564348,Mapped,10,
-rs174536,Mapped,10,
-rs7108760,Mapped,9,
-rs603424,Mapped,10,
-rs147794363,Unmapped,0,No data returned
-rs28456,Mapped,10,
-rs102275,Mapped,10,
-rs635619,Mapped,1,
-rs111540621,Mapped,10,
-rs2011425,Mapped,10,
-rs73076175,Mapped,2,
-rs174565,Mapped,10,
-rs1902023,Mapped,10,
-rs13138057,Unmapped,0,No data returned
-rs118072533,Mapped,1,
-rs174599,Mapped,10,
-rs8055330,Unmapped,0,No data returned
-rs148982377,Mapped,10,
-rs72838129,Mapped,2,
-rs174544,Mapped,10,
-rs2338201,Mapped,3,
-rs1440581,Mapped,10,
-rs6684114,Unmapped,0,No data returned
 rs2762353,Mapped,10,
-rs13410232,Mapped,10,
-rs10835063,Mapped,1,
-rs72753956,Unmapped,0,No data returned
-rs4902243,Mapped,7,
-rs968567,Mapped,10,
-rs174549,Mapped,10,
-rs12878807,Mapped,10,
-rs72818671,Unmapped,0,No data returned
-rs7160525,Mapped,10,
-rs4949674,Unmapped,0,No data returned
-rs17843966,Mapped,10,
-rs112201728,Mapped,10,
-rs61896141,Mapped,10,
-rs12928099,Mapped,10,
-rs504434,Mapped,5,
-rs113860908,Unmapped,0,No data returned
-rs4705857,Mapped,2,
-rs41278174,Mapped,10,
-rs174553,Mapped,10,
-rs2231142,Mapped,10,
-rs4814175,Mapped,10,
-rs1767447,Mapped,1,
-rs174555,Mapped,10,
+rs9429103,Mapped,7,
+rs1177442,Mapped,10,
+rs28415528,Mapped,10,
+rs62129966,Mapped,10,
 rs4149056,Mapped,10,
-rs3798707,Mapped,1,
-rs112152869,Unmapped,0,No data returned
-rs72838150,Unmapped,0,No data returned
-rs56113850,Mapped,10,
-rs971887,Unmapped,0,No data returned
-rs3890010,Unmapped,0,No data returned
-rs10504255,Mapped,10,
-rs2271060,Unmapped,0,No data returned
-rs78303338,Unmapped,0,No data returned
-rs1466448,Mapped,10,
-rs77863699,Mapped,2,
-rs11626972,Mapped,10,
-rs174574,Mapped,10,
-rs99780,Mapped,10,
-rs10168931,Mapped,10,
+rs72873999,Unmapped,0,No data returned
+rs174567,Mapped,10,
 rs12132488,Mapped,9,
-rs7533888,Unmapped,0,No data returned
-rs10788817,Mapped,6,
-rs174548,Mapped,10,
-rs640777,Mapped,2,
-rs272857,Mapped,2,
-rs1858536,Unmapped,0,No data returned
-rs887829,Mapped,10,
-rs112875651,Mapped,10,
-rs1495741,Mapped,10,
-rs1146646,Unmapped,0,No data returned
-rs174570,Mapped,10,
-rs1260326,Mapped,10,
-rs61732863,Mapped,2,
-rs1495743,Mapped,10,
-rs61797339,Mapped,8,
-rs274561,Unmapped,0,No data returned
-rs4814176,Mapped,10,
-rs3756669,Mapped,5,
-rs2229738,Mapped,10,
-rs272849,Mapped,1,
+rs558813,Mapped,1,
 rs1871194,Mapped,3,
-rs6678639,Mapped,2,
-rs11541763;rs141600125,Unmapped,0,No data returned
-rs9461218,Mapped,10,
-rs270614,Mapped,1,
-rs173539,Mapped,10,
-rs7539246,Mapped,1,
-rs11689392,Unmapped,0,No data returned
-rs976058,Mapped,2,
-rs174554,Mapped,10,
-rs7310409,Mapped,10,
-rs12897637,Mapped,10,
-rs72790679,Mapped,1,
-rs113017476,Mapped,10,
-rs74364753,Unmapped,0,No data returned
-rs11516732,Mapped,2,
+rs1871395,Mapped,10,
+rs4507958,Mapped,10,
+rs12318075,Mapped,8,
+rs603424,Mapped,10,
+rs7524467,Mapped,1,
+rs662138,Mapped,10,
+rs56113850,Mapped,10,
+rs2160387,Mapped,10,
+rs7678928,Mapped,8,
+rs17101394,Mapped,10,
+rs7157785,Mapped,10,
+rs148982377,Mapped,10,
+rs113354025,Mapped,2,
+rs174546,Mapped,10,
+rs1260326,Mapped,10,
+rs102275,Mapped,10,
+rs324420,Mapped,10,
+rs174570,Mapped,10,
+rs1165152,Mapped,10,
+rs1466448,Mapped,10,
+rs1047891,Mapped,10,
+rs10426201,Mapped,7,
+rs174564,Mapped,10,
+rs4881413,Unmapped,0,No data returned
+rs17134601,Unmapped,0,No data returned
+rs2151901,Unmapped,0,No data returned
+rs2516788,Mapped,2,
+rs77697233,Mapped,1,
+rs99780,Mapped,10,
+rs75406471,Mapped,10,
+rs174695,Mapped,6,
+rs72719193,Mapped,10,
+rs3732218,Mapped,8,
+rs2185152,Mapped,7,
+rs4149026,Unmapped,0,No data returned
+rs28362590,Mapped,10,
+rs151154986,Mapped,10,
+rs12239945,Unmapped,0,No data returned
+rs964184,Mapped,10,
+rs7541058,Mapped,2,
+rs4845409,Unmapped,0,No data returned
+rs4949674,Unmapped,0,No data returned
+rs61797339,Mapped,8,
+rs73067080,Mapped,4,
+rs174560,Mapped,10,
+rs7160525,Mapped,10,
+rs6593514,Unmapped,0,No data returned
+rs955909,Unmapped,0,No data returned
+rs35630725;rs1890452,Unmapped,0,No data returned
+rs3799340,Mapped,5,
+rs174535,Mapped,10,
+rs3732219,Unmapped,0,No data returned
 rs2403254,Mapped,3,
 rs686548,Mapped,10,
-rs72719193,Mapped,10,
-rs2255531,Mapped,10,
-rs17763487,Unmapped,0,No data returned
-rs3863632,Mapped,1,
-rs11572116,Unmapped,0,No data returned
-rs149027545,Mapped,5,
-rs2817188,Mapped,10,
-rs1057868,Mapped,10,
-rs11572082,Mapped,1,
-rs73079476,Mapped,10,
-rs61825638,Mapped,10,
-rs174559,Mapped,10,
-rs11932131,Unmapped,0,No data returned
-rs6740766,Unmapped,0,No data returned
-rs174547,Mapped,10,
-rs6593515,Unmapped,0,No data returned
-rs270615,Mapped,7,
-rs80159642,Mapped,1,
-rs6587634,Mapped,1,
-rs11576162,Unmapped,0,No data returned
-rs73528979,Unmapped,0,No data returned
-rs149218,Unmapped,0,No data returned
-rs174528,Mapped,10,
 rs1165195,Mapped,10,
-rs72738356,Mapped,3,
-rs2328895,Mapped,10,
-rs9994887,Mapped,5,
-rs71583465,Unmapped,0,No data returned
-rs3134950,Mapped,10,
-rs9925773,Mapped,9,
-rs62129968,Mapped,6,
-rs2062541,Mapped,10,
-rs57025390,Unmapped,0,No data returned
-rs174568,Mapped,10,
-rs7573275,Mapped,2,
-rs174567,Mapped,10,
-rs2472297,Mapped,10,
-rs12074806,Unmapped,0,No data returned
-rs2275378,Unmapped,0,No data returned
-rs438568,Mapped,10,
-rs61817724,Mapped,4,
-rs924135,Mapped,10,
-rs1889459,Unmapped,0,No data returned
-rs4148324,Mapped,6,
-rs9818982,Unmapped,0,No data returned
-rs4751996,Mapped,10,
-rs445925,Mapped,10,
-rs12356193,Mapped,6,
-rs67757078,Unmapped,0,No data returned
 rs272893,Mapped,1,
-rs2657879,Mapped,10,
-rs2244608,Mapped,10,
-rs7538652,Mapped,3,
-rs2282377,Mapped,4,
-rs6584191,Mapped,4,
-rs1169306,Mapped,5,
-rs9379992,Mapped,2,
-rs10075801,Mapped,10,
-rs1165152,Mapped,10,
-rs143647521,Mapped,5,
-rs6839534,Mapped,1,
-rs955909,Unmapped,0,No data returned
-rs62142080,Mapped,5,
-rs200698395;rs6440123,Unmapped,0,No data returned
-rs7893850,Mapped,2,
-rs780093,Mapped,10,
-rs2047251,Unmapped,0,No data returned
-rs13277738,Mapped,3,
-rs77697233,Mapped,1,
-rs148925835,Unmapped,0,No data returned
-rs58231493,Mapped,10,
-rs35259237,Unmapped,0,No data returned
 rs2547233,Mapped,2,
-rs55650311,Mapped,1,
+rs113017476,Mapped,10,
+rs273903,Unmapped,0,No data returned
 rs174533,Mapped,10,
-rs56078223,Mapped,2,
-rs174695,Mapped,6,
-rs11161468,Mapped,3,
-rs9749262,Mapped,1,
-rs419291,Mapped,2,
-rs2336168,Mapped,2,
-rs4841132,Mapped,10,
-rs6593514,Unmapped,0,No data returned
-rs2279501,Mapped,2,
-rs6693388,Mapped,5,
-rs35372182,Mapped,10,
-rs3007670,Unmapped,0,No data returned
-rs35594,Mapped,1,
-rs7814648,Unmapped,0,No data returned
-rs2999545,Mapped,4,
-rs7524467,Mapped,1,
-rs13059045,Unmapped,0,No data returned
-rs1056425,Unmapped,0,No data returned
-rs200837,Unmapped,0,No data returned
-rs1060870,Mapped,2,
-rs1045989,Unmapped,0,No data returned
-rs37369,Mapped,10,
-rs34362765,Mapped,2,
-rs118168183,Mapped,4,
-rs10201159,Mapped,10,
-rs17349049,Mapped,2,
-rs72811904,Unmapped,0,No data returned
-rs9848779,Mapped,6,
-rs102274,Mapped,10,
-rs1077989,Mapped,10,
-rs73067080,Mapped,4,
-rs7546641,Unmapped,0,No data returned
+rs4705857,Mapped,2,
+rs2229738,Mapped,10,
+rs141032338,Unmapped,0,No data returned
+rs55660717,Unmapped,0,No data returned
+rs8736,Mapped,10,
+rs17864701,Mapped,4,
+rs174554,Mapped,10,
+rs7573275,Mapped,2,
+rs62317882,Mapped,3,
+rs4148324,Mapped,6,
+rs274546,Mapped,1,
+rs174566,Mapped,10,
+rs43160,Unmapped,0,No data returned
+rs10197542,Unmapped,0,No data returned
+rs57218593,Unmapped,0,No data returned
+rs2328895,Mapped,10,
+rs4814176,Mapped,10,
+rs1885041,Mapped,10,
+rs4680,Mapped,10,
+rs17134724,Mapped,1,
+rs62142080,Mapped,5,
+rs3756669,Mapped,5,
+rs1169306,Mapped,5,
+rs7705826,Mapped,3,
+rs2393791,Mapped,10,
+rs8012828,Mapped,10,
+rs174549,Mapped,10,
+rs174536,Mapped,10,
+rs72551330,Mapped,10,
+rs12209125,Mapped,7,
+rs28601761,Mapped,10,
+rs1910802,Mapped,1,
+rs11161620,Mapped,4,
+rs2214195,Mapped,1,
+rs2011425,Mapped,10,
+rs73076175,Mapped,2,
+rs6684114,Unmapped,0,No data returned
+rs4781721,Mapped,5,
+rs61732863,Mapped,2,
+rs34670419,Mapped,10,
+rs7893850,Mapped,2,
+rs7533888,Unmapped,0,No data returned
+rs13062174,Unmapped,0,No data returned
+rs273917,Mapped,2,
+rs113860908,Unmapped,0,No data returned
+rs174580,Mapped,10,
+rs7412,Mapped,10,
+rs12587599,Mapped,5,
+rs35818294,Mapped,10,
 rs11204915,Unmapped,0,No data returned
+rs1045989,Unmapped,0,No data returned
+rs7310409,Mapped,10,
+rs12897637,Mapped,10,
+rs67981690,Mapped,10,
+rs680379,Mapped,10,
+rs6695324,Unmapped,0,No data returned
+rs102274,Mapped,10,
+rs611084,Unmapped,0,No data returned
+rs12208357,Mapped,10,
+rs272849,Mapped,1,
+rs200698395;rs6440123,Unmapped,0,No data returned
+rs1358894,Unmapped,0,No data returned
+rs61987136,Mapped,1,
+rs1440581,Mapped,10,
+rs17763487,Unmapped,0,No data returned
+rs4646961,Mapped,3,
+rs34048349,Mapped,1,
+rs56390141,Unmapped,0,No data returned
+rs174548,Mapped,10,
+rs77773255,Mapped,3,
+rs1163547,Mapped,1,
+rs1165196,Mapped,10,
+rs2062541,Mapped,10,
+rs1495741,Mapped,10,
+rs11253048,Mapped,2,
+rs2275378,Unmapped,0,No data returned
+rs233108,Unmapped,0,No data returned
+rs11598823,Unmapped,0,No data returned
+rs12659258,Mapped,5,
+rs12091720,Mapped,5,
+rs73079476,Mapped,10,
+rs1165169,Unmapped,0,No data returned
+rs7475281,Mapped,1,
+rs3134950,Mapped,10,
+rs174544,Mapped,10,
+rs62004868,Mapped,1,
+rs73357523,Unmapped,0,No data returned
+rs1371516,Mapped,1,
+rs8056893,Mapped,10,
+rs174547,Mapped,10,
+rs364585,Mapped,10,
+rs10075801,Mapped,10,
+rs1154510,Mapped,2,
+rs11893881,Mapped,1,
+rs419291,Mapped,2,
+rs7538652,Mapped,3,
+rs3752246,Mapped,10,
+rs3761895,Mapped,9,
+rs174545,Mapped,10,
+rs12928099,Mapped,10,
+rs2282377,Mapped,4,
+rs79983684,Unmapped,0,No data returned
+rs270614,Mapped,1,
+rs77863699,Mapped,2,
+rs10076701,Mapped,4,
+rs77420750,Mapped,7,
+rs272880,Unmapped,0,No data returned
+rs10014755,Mapped,4,
+rs9925773,Mapped,9,
 rs1573178,Mapped,1,
-rs7757606,Unmapped,0,No data returned
-rs13431529,Mapped,10,
-rs151228,Mapped,4,
-rs6271,Mapped,10,
-rs11158671,Mapped,10,
-rs55727637,Mapped,9,
-rs61897793,Mapped,10,
-rs74494115,Mapped,1,
-rs7535991,Unmapped,0,No data returned
-rs1165157,Unmapped,0,No data returned
-rs2073644,Unmapped,0,No data returned
+rs3750572,Unmapped,0,No data returned
 rs6662728,Unmapped,0,No data returned
-rs72654473,Mapped,10,
-rs4889286,Mapped,6,
+rs11516732,Mapped,2,
 rs75939760,Unmapped,0,No data returned
 rs77815174,Unmapped,0,No data returned
 rs144025042,Mapped,3,
-rs682821,Unmapped,0,No data returned
-rs72754978,Mapped,1,
-rs2071426,Mapped,5,
-rs17134601,Unmapped,0,No data returned
-rs67168912;rs2841648,Unmapped,0,No data returned
-rs17279437,Mapped,10,
-rs35599367,Mapped,5,
-rs7913269,Unmapped,0,No data returned
+rs11950562,Mapped,6,
+rs151232,Mapped,3,
+rs11642648,Unmapped,0,No data returned
+rs3945981,Mapped,4,
+rs1495743,Mapped,10,
+rs113665868,Unmapped,0,No data returned
+rs72818678,Mapped,1,
+rs1902023,Mapped,10,
+rs11584320,Unmapped,0,No data returned
+rs4814175,Mapped,10,
+rs1185567,Mapped,5,
+rs924135,Mapped,10,
+rs174584,Mapped,10,
+rs11583922,Mapped,2,
+rs72818671,Unmapped,0,No data returned
+rs62492368,Mapped,10,
+rs17134531,Mapped,6,
+rs2123886,Mapped,1,
+rs56028913,Unmapped,0,No data returned
+rs2271060,Unmapped,0,No data returned
+rs2338201,Mapped,3,
+rs4410790,Mapped,10,
+rs11644601,Mapped,10,
+rs10799478,Mapped,2,
+rs2244608,Mapped,10,
+rs11753995,Mapped,10,
+rs274557,Mapped,1,
+rs11626972,Mapped,10,
+rs274571,Unmapped,0,No data returned
 rs388891,Unmapped,0,No data returned
-rs150404394,Mapped,1,
-rs34048349,Mapped,1,
-rs56390141,Unmapped,0,No data returned
-rs1165154,Mapped,3,
-rs2076007,Mapped,7,
-rs114372026,Unmapped,0,No data returned
-rs2734331,Mapped,2,
-rs9884390,Mapped,10,
-rs72873999,Unmapped,0,No data returned
-rs57674198,Unmapped,0,No data returned
-rs2788654,Unmapped,0,No data returned
-rs7186307,Unmapped,0,No data returned
-rs7186805,Unmapped,0,No data returned
-rs12127402,Unmapped,0,No data returned
-rs62625008,Mapped,1,
-rs116451520,Unmapped,0,No data returned
-rs11572168,Unmapped,0,No data returned
-rs715,Mapped,10,
-rs1046756,Mapped,1,
-rs59569607;rs1937130,Unmapped,0,No data returned
-rs2006092,Mapped,3,
-rs7727038,Mapped,1,
-rs6685187,Mapped,2,
-rs9467618,Mapped,10,
-rs4680,Mapped,10,
-rs3734398,Mapped,3,
-rs56148886,Mapped,1,
-rs72963813,Unmapped,0,No data returned
-rs6546869,Mapped,8,
-rs17843929,Mapped,8,
-rs239958,Unmapped,0,No data returned
-rs12611275,Mapped,8,
-rs1165169,Unmapped,0,No data returned
-rs1871395,Mapped,10,
-rs4500751,Mapped,10,
-rs4921913,Mapped,10,
-rs10896190,Unmapped,0,No data returned
-rs6695324,Unmapped,0,No data returned
-rs1165178,Mapped,3,
-rs60705719,Unmapped,0,No data returned
-rs10888445,Mapped,1,
-rs34670419,Mapped,10,
-rs10014755,Mapped,4,
-rs2393791,Mapped,10,
-rs73530508,Mapped,10,
-rs13894,Mapped,10,
-rs3764261,Mapped,10,
-rs72818652,Mapped,1,
-rs12080585,Unmapped,0,No data returned
-rs8736,Mapped,10,
-rs10206899,Mapped,10,
-rs55754655,Mapped,3,
-rs118111115,Unmapped,0,No data returned
-rs45535939,Unmapped,0,No data returned
-rs75794524,Mapped,2,
-rs11893881,Mapped,1,
-rs61622554,Mapped,2,
-rs174535,Mapped,10,
-rs117978821,Unmapped,0,No data returned
-rs4246215,Mapped,10,
 rs9332214,Unmapped,0,No data returned
 rs61988865,Mapped,2,
-rs74637339,Mapped,9,
-rs441969,Mapped,3,
-rs3945981,Mapped,4,
-rs2130525,Mapped,1,
-rs7542137,Mapped,3,
-rs12924212,Unmapped,0,No data returned
-rs9435963,Unmapped,0,No data returned
-rs7523082,Mapped,1,
-rs12924700,Mapped,1,
-rs2185152,Mapped,7,
-rs6430545,Unmapped,0,No data returned
-rs4665972,Mapped,10,
-rs4646961,Mapped,3,
-rs174538,Mapped,10,
+rs11242109,Mapped,10,
+rs1183200,Mapped,3,
+rs148925835,Unmapped,0,No data returned
+rs11211402,Mapped,2,
+rs34196306,Mapped,4,
+rs3131071,Mapped,7,
+rs2517601,Mapped,3,
+rs72787511,Mapped,5,
+rs10890426,Mapped,2,
+rs58231493,Mapped,10,
+rs1077989,Mapped,10,
+rs3734398,Mapped,3,
+rs73063122,Mapped,8,
+rs16833669,Mapped,2,
+rs11211403,Mapped,3,
+rs1165154,Mapped,3,
+rs3812316,Mapped,10,
+rs273913,Mapped,6,
 rs12210538,Mapped,10,
+rs9653945,Mapped,10,
+rs10788817,Mapped,6,
+rs6546869,Mapped,8,
+rs12127402,Unmapped,0,No data returned
+rs4683440,Unmapped,0,No data returned
+rs28456,Mapped,10,
+rs2472297,Mapped,10,
+rs57025390,Unmapped,0,No data returned
+rs55971546,Mapped,10,
+rs2999545,Mapped,4,
+rs200837,Unmapped,0,No data returned
+rs11006681,Mapped,1,
+rs73355734,Mapped,2,
+rs174553,Mapped,10,
+rs4665972,Mapped,10,
+rs140168704,Mapped,1,
+rs17279437,Mapped,10,
+rs37370,Mapped,10,
+rs8008068,Mapped,10,
+rs12878001,Mapped,10,
+rs17843929,Mapped,8,
+rs60218157,Unmapped,0,No data returned
+rs174559,Mapped,10,
+rs2817188,Mapped,10,
 rs1321536,Mapped,2,
+rs6587634,Mapped,1,
+rs2071426,Mapped,5,
+rs72738356,Mapped,3,
+rs78132593,Mapped,10,
+rs35594,Mapped,1,
+rs2519093,Mapped,10,
+rs61897793,Mapped,10,
+rs34955778,Mapped,10,
+rs6701374,Unmapped,0,No data returned
+rs4902243,Mapped,7,
+rs1799822,Mapped,6,
+rs72818652,Mapped,1,
+rs10168931,Mapped,10,
+rs3798707,Mapped,1,
+rs2999541,Mapped,1,
+rs12356193,Mapped,6,
+rs45535939,Unmapped,0,No data returned
+rs72795121,Mapped,8,
+rs9461218,Mapped,10,
+rs174568,Mapped,10,
+rs968567,Mapped,10,
+rs72654473,Mapped,10,
+rs71583465,Unmapped,0,No data returned
+rs9749262,Mapped,1,
+rs7814648,Unmapped,0,No data returned
+rs3007685,Unmapped,0,No data returned
+rs35494829,Mapped,3,
+rs2900478,Mapped,10,
+rs4246215,Mapped,10,
+rs1169284,Mapped,10,
+rs2336168,Mapped,2,
+rs174599,Mapped,10,
+rs11689392,Unmapped,0,No data returned
+rs147794363,Unmapped,0,No data returned
 rs689308,Unmapped,0,No data returned
-rs3935209,Mapped,10,
-rs1910802,Mapped,1,
+rs11211408,Mapped,1,
+rs55826256,Mapped,2,
+rs5117,Mapped,10,
+rs11211406,Mapped,2,
+rs10160784,Mapped,9,
+rs445925,Mapped,10,
+rs4949874,Mapped,7,
+rs438568,Mapped,10,
+rs9379992,Mapped,2,
+rs111540621,Mapped,10,
+rs10255591,Unmapped,0,No data returned
+rs7094385,Mapped,10,
+rs10888445,Mapped,1,
+rs59569607;rs1937130,Unmapped,0,No data returned
+rs2631371,Unmapped,0,No data returned
+rs37369,Mapped,10,
+rs2073644,Unmapped,0,No data returned
+rs60705719,Unmapped,0,No data returned
+rs4149083,Mapped,10,
+rs2933243,Mapped,10,
+rs13538,Mapped,10,
+rs11572168,Unmapped,0,No data returned
+rs7108760,Mapped,9,
+rs111770290,Unmapped,0,No data returned
+rs2066183,Unmapped,0,No data returned
+rs10201159,Mapped,10,
+rs10835063,Mapped,1,
+rs13320,Unmapped,0,No data returned
+rs4804290,Mapped,1,
+rs72753956,Unmapped,0,No data returned
+rs74717771,Mapped,1,
+rs11990854,Unmapped,0,No data returned
+rs3757131,Mapped,1,
+rs11576162,Unmapped,0,No data returned
+rs4148415,Mapped,3,
+rs72818679,Unmapped,0,No data returned
+rs296381,Mapped,3,
+rs2108622,Mapped,10,
+rs112152869,Unmapped,0,No data returned
+rs11743851,Mapped,4,
+rs7727038,Mapped,1,
+rs112344408,Mapped,3,
+rs55804858,Mapped,1,
+rs12212049,Mapped,9,
+rs8055330,Unmapped,0,No data returned
+rs149218,Unmapped,0,No data returned
+rs80159642,Mapped,1,
+rs7560272,Mapped,3,
+rs12737375,Unmapped,0,No data returned
+rs17349049,Mapped,2,
+rs72811904,Unmapped,0,No data returned
+rs174528,Mapped,10,
+rs10468017,Mapped,10,
+rs588136,Mapped,10,
+rs3907532,Unmapped,0,No data returned
+rs62625008,Mapped,1,
+rs274556,Mapped,2,
+rs11572116,Unmapped,0,No data returned
+rs13410232,Mapped,10,
+rs57674198,Unmapped,0,No data returned
+rs143647521,Mapped,5,
+rs97384,Mapped,10,
+rs34362765,Mapped,2,
+rs7547056,Unmapped,0,No data returned
+rs7546641,Unmapped,0,No data returned
+rs6678639,Mapped,2,
+rs2294866,Mapped,1,
+rs1057868,Mapped,10,
+rs1165209,Mapped,6,
+rs174537,Mapped,10,
+rs1134688,Mapped,6,
+rs406383,Mapped,5,
+rs45499402,Mapped,9,
+rs174565,Mapped,10,
+rs10896190,Unmapped,0,No data returned
+rs148592401,Unmapped,0,No data returned
+rs261290,Mapped,10,
+rs165722,Mapped,10,
+rs6685187,Mapped,2,
+rs112201728,Mapped,10,
+rs483082,Mapped,10,
+rs115430557,Mapped,1,
+rs10018448,Mapped,10,
+rs4921913,Mapped,10,
+rs164749,Mapped,10,
+rs55990066,Mapped,5,
+rs7539246,Mapped,1,
+rs10128455,Mapped,1,
+rs56398830,Mapped,10,
+rs11045883,Mapped,1,
+rs2463820,Unmapped,0,No data returned
+rs8012505,Mapped,10,
+rs715,Mapped,10,
+rs6690449,Mapped,3,
+rs9295741,Mapped,6,
+rs141232858,Mapped,2,
+rs174561,Mapped,10,
+rs11161468,Mapped,3,
+rs9940632,Unmapped,0,No data returned
+rs12317268,Mapped,10,
+rs635619,Mapped,1,
+rs272872,Unmapped,0,No data returned
+rs1564348,Mapped,10,
+rs1321940,Mapped,10,
+rs2257962,Mapped,1,
+rs1535,Mapped,10,
+rs6593515,Unmapped,0,No data returned
+rs34400381,Mapped,10,
+rs1060870,Mapped,2,
+rs111598382,Unmapped,0,No data returned
+rs780093,Mapped,10,
+rs67392104,Mapped,1,
+rs1889459,Unmapped,0,No data returned
+rs146523885;rs2278919,Unmapped,0,No data returned
+rs12136754,Mapped,1,
+rs2727270,Mapped,10,
+rs183628518,Unmapped,0,No data returned
+rs9738226,Mapped,10,
+rs2041073,Mapped,6,
+rs7544117,Unmapped,0,No data returned
+rs2337685,Mapped,1,
+rs12080585,Unmapped,0,No data returned
+rs999992,Unmapped,0,No data returned
+rs13384756,Mapped,4,
+rs231976,Mapped,2,
+rs7523082,Mapped,1,
+rs181558,Mapped,2,
+rs12123977,Mapped,5,
+rs4949877,Mapped,1,
+rs17843966,Mapped,10,
+rs1185568,Mapped,1,
+rs11045856,Mapped,10,
+rs11161493,Mapped,1,
+rs640777,Mapped,2,
+rs62149622,Unmapped,0,No data returned
+rs58242989,Unmapped,0,No data returned
+rs887829,Mapped,10,
+rs9922704,Mapped,1,
+rs111344855,Unmapped,0,No data returned
+rs55672373,Mapped,5,
+rs9943281,Unmapped,0,No data returned
+rs1532624,Mapped,10,
+rs270601,Mapped,3,
+rs61896141,Mapped,10,
+rs9848779,Mapped,6,
+rs111262375,Unmapped,0,No data returned
+rs75645849,Unmapped,0,No data returned
+rs56078223,Mapped,2,
+rs73295349,Mapped,3,
+rs67168912;rs2841648,Unmapped,0,No data returned
+rs2264750,Mapped,9,
+rs869452,Unmapped,0,No data returned
+rs8396,Mapped,10,
+rs2788654,Unmapped,0,No data returned
+rs2231142,Mapped,10,
+rs11075290,Unmapped,0,No data returned
+rs10873685,Unmapped,0,No data returned
+rs11541763;rs141600125,Unmapped,0,No data returned
+rs1165183,Unmapped,0,No data returned
+rs7539768,Unmapped,0,No data returned
+rs272857,Mapped,2,
+rs72690839,Mapped,4,
+rs6709525,Mapped,10,
+rs7252778,Mapped,10,
+rs78303338,Unmapped,0,No data returned
+rs142696888,Unmapped,0,No data returned
+rs174538,Mapped,10,
+rs149665880,Unmapped,0,No data returned
+rs117212403,Unmapped,0,No data returned
+rs7513363,Mapped,7,
+rs72790679,Mapped,1,
+rs72800809,Unmapped,0,No data returned
+rs113425774,Unmapped,0,No data returned
+rs635620,Mapped,1,
+rs6430545,Unmapped,0,No data returned
+rs1827711,Unmapped,0,No data returned
+rs1049742,Mapped,10,
+rs34164133,Mapped,4,
+rs6693396,Mapped,1,
+rs72963813,Unmapped,0,No data returned
+rs4714634,Mapped,1,
+rs274555,Mapped,10,
+rs6687264,Mapped,1,
+rs62317895,Unmapped,0,No data returned
+rs62129968,Mapped,6,
+rs200838,Mapped,10,
+rs2999546,Unmapped,0,No data returned
+rs173539,Mapped,10,
+rs11754288,Mapped,3,
+rs441969,Mapped,3,
 rs34613987,Mapped,1,
+rs117283130,Unmapped,0,No data returned
+rs56672945,Unmapped,0,No data returned
+rs74364753,Unmapped,0,No data returned
+rs61622554,Mapped,2,
+rs112997117,Mapped,3,
+rs969114,Mapped,2,
+rs1185978,Unmapped,0,No data returned
+rs7535991,Unmapped,0,No data returned
+rs34760583;rs200076830,Unmapped,0,No data returned
+rs61817724,Mapped,4,
+rs28597732,Mapped,3,
+rs272874,Mapped,1,
+rs17231506,Mapped,10,
+rs35546703,Unmapped,0,No data returned
+rs35570672,Mapped,10,
+rs1359232,Mapped,10,
+rs441109,Unmapped,0,No data returned
+rs66975207,Mapped,6,
+rs35001169,Mapped,2,
+rs3749971,Mapped,10,
+rs1219549,Mapped,3,
+rs2790,Mapped,5,
+rs115332425,Unmapped,0,No data returned
+rs112881196,Mapped,10,
+rs6593673,Unmapped,0,No data returned
+rs12093623,Unmapped,0,No data returned
+rs296383,Unmapped,0,No data returned
+rs2130525,Mapped,1,
+rs60782127,Mapped,10,
+rs2236872,Mapped,1,
+rs6425167,Unmapped,0,No data returned
+rs56075687,Unmapped,0,No data returned
+rs7556201,Unmapped,0,No data returned
+rs151227875,Mapped,3,
+rs11572082,Mapped,1,
+rs10873259,Unmapped,0,No data returned
+rs4076073,Unmapped,0,No data returned
+rs72818656,Unmapped,0,No data returned
+rs2338209,Unmapped,0,No data returned
+rs9994887,Mapped,5,
+rs12638256,Mapped,10,
+rs114372026,Unmapped,0,No data returned
+rs2734331,Mapped,2,
+rs4985154,Mapped,5,
+rs273900,Mapped,1,
+rs1043011,Mapped,2,
+rs75791649,Unmapped,0,No data returned
+rs2295601,Mapped,5,
+rs11204914,Mapped,3,
+rs556339,Mapped,9,
+rs1531022,Mapped,8,
+rs151228,Mapped,4,
+rs270615,Mapped,7,
+rs274561,Unmapped,0,No data returned
+rs72796850,Unmapped,0,No data returned
+rs3863632,Mapped,1,
+rs118168183,Mapped,4,
+rs117978821,Unmapped,0,No data returned
+rs2279501,Mapped,2,
+rs13894,Mapped,10,
+rs34927101,Mapped,3,
+rs189297030,Mapped,1,
+rs73530508,Mapped,10,
+rs270607,Unmapped,0,No data returned
+rs72754978,Mapped,1,
+rs112875651,Mapped,10,
+rs7542137,Mapped,3,
+rs6752270,Unmapped,0,No data returned
+rs7572565,Mapped,1,
+rs9818982,Unmapped,0,No data returned
+rs72838150,Unmapped,0,No data returned
+rs12562586,Unmapped,0,No data returned
+rs6536365,Unmapped,0,No data returned
+rs7111570,Mapped,4,
+rs11188148,Mapped,2,
+rs6584191,Mapped,4,
+rs13197514,Mapped,4,
+rs35372182,Mapped,10,
+rs149027545,Mapped,5,
+rs11165339,Unmapped,0,No data returned
+rs62440901,Mapped,3,
+rs7534754,Mapped,3,
+rs11252869,Unmapped,0,No data returned
+rs6546857,Mapped,5,
+rs660560,Mapped,1,
+rs17863784,Unmapped,0,No data returned
+rs61741519,Unmapped,0,No data returned
+rs4147929,Mapped,10,
+rs4559448,Unmapped,0,No data returned
+rs11191421,Mapped,7,
+rs270612,Mapped,1,
+rs174529,Mapped,10,
+rs12911035,Unmapped,0,No data returned
+rs10212439,Mapped,1,
+rs35259237,Unmapped,0,No data returned
+rs76021834,Unmapped,0,No data returned
+rs6897575,Mapped,2,
+rs1165181,Mapped,2,
+rs272855,Unmapped,0,No data returned
+rs4500751,Mapped,10,
+rs2932586,Unmapped,0,No data returned
+rs8523,Mapped,1,
+rs12924212,Unmapped,0,No data returned
+rs74827952,Mapped,10,
+rs61825638,Mapped,10,
+rs4962237,Mapped,2,
+rs504434,Mapped,5,
+rs13202291,Mapped,1,
+rs2279502,Unmapped,0,No data returned
+rs174555,Mapped,10,
+rs55754655,Mapped,3,
+rs118111115,Unmapped,0,No data returned
+rs3007670,Unmapped,0,No data returned
+rs56335308,Mapped,10,
+rs150404394,Mapped,1,
+rs17843919,Unmapped,0,No data returned
+rs971887,Unmapped,0,No data returned
+rs3846910,Unmapped,0,No data returned
+rs11578832,Mapped,4,
+rs11244061,Mapped,10,
+rs62107762,Mapped,4,
+rs620484,Unmapped,0,No data returned
+rs58664468,Unmapped,0,No data returned
+rs10742688,Unmapped,0,No data returned
+rs12095130,Mapped,1,
+rs1185976,Mapped,3,
+rs17692943,Unmapped,0,No data returned
+rs13266992,Unmapped,0,No data returned
+rs296382,Unmapped,0,No data returned
+rs6587640,Mapped,1,
+rs1146581,Mapped,1,
+rs7969341,Mapped,3,
+rs1165178,Mapped,3,
+rs12941811,Mapped,7,
+rs1046756,Mapped,1,
+rs12878807,Mapped,10,
+rs28708576,Unmapped,0,No data returned
+rs11668882,Mapped,10,
+rs55664906,Mapped,5,
+rs67757078,Unmapped,0,No data returned
+rs74637339,Mapped,9,
+rs61791757,Mapped,3,
+rs141464980,Unmapped,0,No data returned
+rs72838138,Mapped,2,
+rs56080571,Unmapped,0,No data returned
+rs55727637,Mapped,9,
+rs1056425,Unmapped,0,No data returned
+rs41318029,Mapped,7,
+rs274572,Mapped,1,
+rs28898605,Mapped,1,
+rs6662611,Unmapped,0,No data returned
+rs11893247,Mapped,1,
+rs7913269,Unmapped,0,No data returned
+rs11572169,Mapped,2,
+rs34396849,Mapped,3,
+rs12777,Mapped,6,
+rs17788484,Mapped,10,
+rs12134854,Mapped,10,
+rs4683709,Unmapped,0,No data returned
+rs676683,Unmapped,0,No data returned
+rs57548703,Unmapped,0,No data returned
+rs2434860,Mapped,1,
+rs6693388,Mapped,5,
+rs56000812,Mapped,1,
+rs626283,Mapped,10,
+rs2047251,Unmapped,0,No data returned
+rs13277738,Mapped,3,
+rs10883783,Unmapped,0,No data returned
+rs3132581,Mapped,1,
+rs2804397,Unmapped,0,No data returned
+rs1446585,Mapped,10,
+rs2342307,Mapped,7,
+rs1146580,Unmapped,0,No data returned
+rs2638314,Mapped,6,
+rs166635,Unmapped,0,No data returned
+rs174577,Mapped,10,
+rs3007691,Unmapped,0,No data returned
+rs162892,Unmapped,0,No data returned
+rs1767447,Mapped,1,
+rs4889286,Mapped,6,
+rs72789842,Unmapped,0,No data returned
+rs258317,Mapped,3,
+rs1858536,Unmapped,0,No data returned
+rs55650311,Mapped,1,
+rs4806498,Mapped,10,
+rs55936281,Mapped,4,
+rs13112099,Mapped,5,
+rs61817697,Mapped,1,
+rs12094842,Mapped,2,
+rs11065384,Mapped,5,
+rs12213779,Unmapped,0,No data returned
+rs2372683,Mapped,1,
+rs6124830,Mapped,6,
+rs2076007,Mapped,7,
+rs2631367,Mapped,10,
+rs1387833,Unmapped,0,No data returned
+rs4917639,Mapped,1,
+rs6688818,Unmapped,0,No data returned
+rs9884390,Mapped,10,
+rs9395857,Unmapped,0,No data returned
+rs239958,Unmapped,0,No data returned
+rs12611275,Mapped,8,
+rs1436121,Unmapped,0,No data returned
+rs72838129,Mapped,2,
+rs116727752,Unmapped,0,No data returned
+rs7604588,Unmapped,0,No data returned
+rs174581,Mapped,10,
+rs35260072,Mapped,2,
+rs3890010,Unmapped,0,No data returned
+rs56165099,Mapped,10,
+rs2305564,Mapped,1,
+rs7570971,Mapped,10,
+rs9435963,Unmapped,0,No data returned
+rs142122182,Mapped,1,
+rs2474777,Unmapped,0,No data returned
+rs9943251,Mapped,10,
+rs7554832,Mapped,1,
+rs1165157,Unmapped,0,No data returned
+rs131805,Mapped,10,
+rs1030271,Mapped,3,
+rs74505001,Unmapped,0,No data returned
+rs9366722,Mapped,1,
+rs1689275,Unmapped,0,No data returned
+rs3961283,Mapped,10,
+rs75794524,Mapped,2,
+rs13431529,Mapped,10,
+rs644173,Mapped,1,
+rs6904596,Mapped,10,
+rs116196017,Mapped,3,
+rs12924700,Mapped,1,
+rs6663730,Unmapped,0,No data returned
+rs10206899,Mapped,10,
+rs55872768,Mapped,1,
+rs1992855,Mapped,3,
+rs4751996,Mapped,10,
+rs6576761,Unmapped,0,No data returned
+rs74763072,Unmapped,0,No data returned
+rs13410335,Mapped,3,
+rs3935209,Mapped,10,
+rs13138057,Unmapped,0,No data returned
+rs118072533,Mapped,1,
+rs743575,Unmapped,0,No data returned
+rs7185391,Mapped,3,
+rs1183201,Mapped,1,
+rs321631,Mapped,1,
+rs1169296,Mapped,3,
+rs6839534,Mapped,1,
+rs1165150,Mapped,4,
+rs17680137,Unmapped,0,No data returned
+rs12074806,Unmapped,0,No data returned
+rs113171113,Mapped,1,
+rs4148325,Mapped,10,
+rs12569207,Unmapped,0,No data returned
+rs2631368,Unmapped,0,No data returned
+rs17843902,Mapped,2,
+rs141622900,Mapped,10,
+rs174574,Mapped,10,
+rs4705933,Unmapped,0,No data returned
+rs7302925,Mapped,10,
+rs2246012,Mapped,10,
+rs6672252,Unmapped,0,No data returned
+rs41278174,Mapped,10,
+rs1790832,Unmapped,0,No data returned
+rs72800808,Unmapped,0,No data returned
+rs976058,Mapped,2,
+rs1061810,Mapped,2,
+rs2236212,Mapped,6,
+rs6740766,Unmapped,0,No data returned
+rs7186805,Unmapped,0,No data returned
+rs4547554,Mapped,10,
+rs59141216,Unmapped,0,No data returned
+rs3750568,Mapped,2,
+rs7970695,Mapped,10,
+rs11575360,Unmapped,0,No data returned
+rs56217918,Unmapped,0,No data returned
+rs13059045,Unmapped,0,No data returned
+rs35307342,Mapped,5,
+rs16833670,Mapped,1,
+rs1616798,Mapped,1,
+rs11647808,Mapped,2,
+rs2255531,Mapped,10,
+rs390082,Mapped,10,
+rs924138,Mapped,10,
+rs1057911,Unmapped,0,No data returned
+rs612022,Unmapped,0,No data returned
+rs12410006,Unmapped,0,No data returned
+rs211717,Unmapped,0,No data returned
+rs2006092,Mapped,3,
+rs2384575,Mapped,5,
+rs7350789,Mapped,10,
+rs12932751,Mapped,3,
+rs11593816,Unmapped,0,No data returned
+rs28444611,Mapped,1,
+rs3843503,Mapped,7,
+rs78293932,Mapped,4,
+rs113831731,Mapped,2,
+rs2631372,Unmapped,0,No data returned
+rs7897822,Mapped,6,
+rs6271,Mapped,10,
+rs1146646,Unmapped,0,No data returned
+rs6546861,Mapped,10,
+rs76712439,Mapped,4,
+rs72787555,Mapped,1,
+rs296380,Unmapped,0,No data returned
+rs659305,Mapped,1,
+rs9393671,Unmapped,0,No data returned
+rs7139079,Mapped,10,
+rs10418164,Mapped,3,
+rs1165191,Mapped,2,
+rs6464114,Mapped,4,
+rs7757606,Unmapped,0,No data returned
+rs4738684,Mapped,10,
+rs4841132,Mapped,10,
+rs7943728,Mapped,10,
+rs72939920,Mapped,10,
+rs34183059,Unmapped,0,No data returned
+rs35779268,Unmapped,0,No data returned
+rs2211012,Unmapped,0,No data returned
+rs4845713,Unmapped,0,No data returned
+rs1169288,Mapped,10,
+rs77762079,Mapped,1,
+rs1569342,Unmapped,0,No data returned
+rs11555762,Mapped,1,
+rs11666866,Mapped,1,
+rs57440165,Mapped,7,
+rs4539242,Mapped,10,
+rs1832007,Mapped,6,
+rs143739151,Unmapped,0,No data returned
+rs13197601,Mapped,4,
+rs9420792,Unmapped,0,No data returned
+rs17145750,Mapped,10,
+rs10414312,Mapped,1,
+rs10916301,Mapped,1,
+rs682821,Unmapped,0,No data returned
+rs7592559,Mapped,1,
+rs7204324,Mapped,2,
+rs9467618,Mapped,10,
+rs12494055,Mapped,1,
+rs4478248,Unmapped,0,No data returned
+rs10788818,Unmapped,0,No data returned
+rs6498540,Mapped,10,
+rs56148886,Mapped,1,
+rs619873,Unmapped,0,No data returned
+rs34713291,Mapped,1,
+rs116451520,Unmapped,0,No data returned
+rs17009149,Unmapped,0,No data returned
+rs74494115,Mapped,1,
+rs17863795,Mapped,1,
+rs1126743;rs17411656,Unmapped,0,No data returned
+rs10518693,Mapped,4,
+rs6705489,Unmapped,0,No data returned
+rs4233633,Unmapped,0,No data returned
+rs11158671,Mapped,10,
+rs1050152,Mapped,3,
+rs409170,Mapped,9,
+rs10504255,Mapped,10,
+rs147464959,Mapped,2,
+rs4639374,Unmapped,0,No data returned
+rs4788815,Mapped,8,
+rs174601,Mapped,10,
+rs6704070,Mapped,1,
+rs7130679,Unmapped,0,No data returned
+rs2295602,Mapped,4,
+rs2657879,Mapped,10,
+rs61997624,Mapped,2,
+rs56313205,Unmapped,0,No data returned
+rs3764261,Mapped,10,
+rs35599367,Mapped,5,
+rs7548962,Unmapped,0,No data returned
+rs2460451,Mapped,2,
+rs73528979,Unmapped,0,No data returned
+rs270606,Unmapped,0,No data returned
+rs7186307,Unmapped,0,No data returned
+rs17685,Mapped,10,
+rs6843382,Unmapped,0,No data returned
+rs11932131,Unmapped,0,No data returned
+rs1256335,Mapped,6,
+rs61817719,Unmapped,0,No data returned

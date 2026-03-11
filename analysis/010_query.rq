@@ -8,6 +8,8 @@ SELECT
   ?metabolite_ratio
   ?causal_gene
   ?biological_pathway
+  ?p_value
+  ?beta
   (GROUP_CONCAT(DISTINCT ?drug_name; separator=", ") AS ?targeting_drugs)
 WHERE {
   # ---------------------------------------------------------
@@ -36,7 +38,11 @@ WHERE {
   # ---------------------------------------------------------
   ?causal_edge a mtr:CausalAssessment ;
                mtr:has_exposure ?gene_node ;
-               mtr:has_outcome ?ratio_node .
+               mtr:has_outcome ?ratio_node ;
+               mtr:p_ivw ?p_value ;
+               mtr:beta_ivw ?beta .
+
+  ?gene_node a mtr:Gene .
 
   ?gene_node rdfs:label ?causal_gene .
 
@@ -58,5 +64,5 @@ WHERE {
   BIND(REPLACE(STR(?snp), "^.*/", "") AS ?snp_id)
 }
 # Group everything together so each disease mechanism only gets ONE row
-GROUP BY ?disease ?snp_id ?metabolite_ratio ?causal_gene ?biological_pathway
+GROUP BY ?disease ?snp_id ?metabolite_ratio ?causal_gene ?biological_pathway ?p_value ?beta
 ORDER BY ?disease
