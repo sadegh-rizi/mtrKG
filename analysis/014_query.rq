@@ -1,0 +1,7 @@
+SELECT ?nodeType (COUNT(DISTINCT ?node) AS ?total_count)
+WHERE {
+    # 'a' is SPARQL shorthand for rdf:type
+    ?node a ?nodeType .
+}
+GROUP BY ?nodeType
+ORDER BY DESC(?total_count)

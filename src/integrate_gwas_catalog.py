@@ -3,10 +3,19 @@ import time
 import urllib.parse
 import re
 import logging
+from pathlib import Path
 import pandas as pd
 from rdflib import Graph, Literal, RDF, URIRef, Namespace
 from rdflib.namespace import RDFS, XSD
-from schema_definition import *  # Ensure you have BIOLINK, MTR, EFO, PROV, SKOS, PUBMED defined
+
+try:
+    from src.schema_definition import *  # Ensure BIOLINK, MTR, EFO, PROV, SKOS, PUBMED defined
+except ModuleNotFoundError:
+    from schema_definition import *
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+OUTPUT_DIR = PROJECT_ROOT / "output"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ==========================================
 # 1. SETUP LOGGING
@@ -15,7 +24,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler("../output/gwas_integration.log", mode='w'),  # Saves to file
+        logging.FileHandler(OUTPUT_DIR / "gwas_integration.log", mode='w'),  # Saves to file
         logging.StreamHandler()  # Prints to Jupyter cell
     ]
 )
@@ -73,7 +82,11 @@ def enrich_graph_with_gwas(g, max_snps=5):
     integration_report = []
 
     # Keywords to distinguish molecular traits from clinical diseases
-    molecular_keywords = ['measurement', 'level', 'amount', 'ratio', 'percentage', 'acid', 'protein']
+    molecular_keywords = [
+        'measurement', 'level', 'amount', 'ratio', 'percentage',
+        'acid', 'protein', 'metabolite', 'lipid', 'cholesterol',
+        ' to ', 'vitamin', 'peptide', 'urate', 'carnitine'
+    ]
 
     for i, snp_node in enumerate(snps_to_process):
         rsid = str(snp_node).split('/')[-1].strip()
@@ -193,7 +206,7 @@ def enrich_graph_with_gwas(g, max_snps=5):
     # 4. SAVE THE REPORT
     # ==========================================
     df_report = pd.DataFrame(integration_report)
-    df_report.to_csv("../output/gwas_mapping_report.csv", index=False)
-    logger.info("Saved mapping report to ../output/gwas_mapping_report.csv")
+    df_report.to_csv(OUTPUT_DIR / "gwas_mapping_report.csv", index=False)
+    logger.info(f"Saved mapping report to {OUTPUT_DIR / 'gwas_mapping_report.csv'}")
 
     return g

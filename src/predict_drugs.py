@@ -1,11 +1,11 @@
 import pandas as pd
+import numpy as np
 import torch
+import logging
+from scipy.spatial.distance import cdist
 from rdflib import Graph, URIRef, BNode
 from pykeen.triples import TriplesFactory
 from pykeen.pipeline import pipeline
-from pykeen.predict import predict_target
-
-import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -13,32 +13,27 @@ logger = logging.getLogger(__name__)
 
 def prepare_kg_for_ml(ttl_file_path):
     """
-    Machine Learning models cannot read text strings or numbers (Literals).
-    They only understand structural links between entities (URIs).
-    This function strips out the Literals and prepares a clean edge-list.
+    Strips out Literals and prepares a clean edge-list for the ML model.
     """
     logger.info("Loading Knowledge Graph for Machine Learning...")
     g = Graph()
     g.parse(ttl_file_path, format="turtle")
 
-    # 1. Extract only Entity-to-Entity triples (ignore strings, p-values, etc.)
     triples = []
     drugs = set()
     diseases = set()
 
-    # Namespaces for filtering later
     BIOLINK_DRUG = URIRef("https://w3id.org/biolink/vocab/Drug")
     BIOLINK_DISEASE = URIRef("https://w3id.org/biolink/vocab/Disease")
+    RDF_TYPE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
 
     for s, p, o in g:
-        # Skip literal values and Blank Nodes
         if isinstance(o, (URIRef, BNode)) and isinstance(s, (URIRef, BNode)):
             triples.append([str(s), str(p), str(o)])
 
-            # Catalog our Drugs and Diseases for the prediction phase
-            if o == BIOLINK_DRUG and p == URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"):
+            if o == BIOLINK_DRUG and p == RDF_TYPE:
                 drugs.add(str(s))
-            if o == BIOLINK_DISEASE and p == URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"):
+            if o == BIOLINK_DISEASE and p == RDF_TYPE:
                 diseases.add(str(s))
 
     df_triples = pd.DataFrame(triples, columns=["head", "relation", "tail"])
@@ -52,87 +47,82 @@ def run_drug_repurposing(ttl_file_path="../data/mtrKG.ttl"):
     # 1. Prepare Data
     df_triples, drugs_list, diseases_list = prepare_kg_for_ml(ttl_file_path)
 
-    if len(drugs_list) == 0 or len(diseases_list) == 0:
-        logger.error("You need both Drugs and Diseases in your graph to predict links between them!")
+    if not drugs_list or not diseases_list:
+        logger.error("You need both Drugs and Diseases in your graph to predict links!")
         return
 
-    # Convert to PyKEEN TriplesFactory format
     tf = TriplesFactory.from_labeled_triples(df_triples.values)
-
-    # Split into Training and Testing sets (80% train, 20% test)
     training, testing = tf.split(random_state=42)
 
     # ==========================================
     # 2. TRAIN THE A.I. MODEL (TransE)
     # ==========================================
-    logger.info("Training TransE Embedding Model (This may take a few minutes)...")
+    logger.info("Training TransE Embedding Model...")
 
-    # Note: epochs=30 is just for a quick test.
-    # For your final presentation, change epochs to 200 for accurate predictions!
     result = pipeline(
         training=training,
         testing=testing,
-        model='TransE',  # The classic translation embedding model
-        epochs=30,  # Increase this for better accuracy!
-        device='cpu'  # Change to 'cuda' if you have an Nvidia GPU
+        model='TransE',
+        epochs=200,  # Increased to 200 for presentation-quality embeddings
+        random_seed=42,  # GUARANTEES REPRODUCIBILITY!
+        device='cpu'
     )
 
-    # Print the model's accuracy on the hidden 20% of edges
-    # Print the model's accuracy safely
     logger.info("Model Training & Evaluation Complete!")
-    try:
-        # Safely fetch MRR using PyKEEN's native built-in getter
-        mrr = result.metric_results.get_metric('mean_reciprocal_rank')
-        logger.info(f"Mean Reciprocal Rank (MRR): {mrr:.4f}")
-    except Exception as e:
-        logger.warning("Could not print MRR, but moving directly to predictions anyway!")
+
     # ==========================================
-    # 3. DRUG REPURPOSING (PREDICT NOVEL LINKS)
+    # 3. DRUG REPURPOSING (VECTORIZED PROXIMITY)
     # ==========================================
-    logger.info("Predicting novel Drug-to-Disease indications...")
-    model = result.model
+    logger.info("Predicting novel indications using Vector Space Proximity...")
 
-    # We want to predict: (Drug, biolink:treats, Disease)
-    # Even if biolink:treats is rare in your graph, the model infers it from topology!
-    TREATS_RELATION = "https://w3id.org/biolink/vocab/treats"
+    # Extract all embeddings
+    entity_embeddings = result.model.entity_representations[0](indices=None).detach().cpu().numpy()
+    entity_to_id = result.training.entity_to_id
 
-    predictions = []
+    # Filter out entities that didn't make it into the training set
+    valid_diseases = [uri for uri in diseases_list if uri in entity_to_id]
+    valid_drugs = [uri for uri in drugs_list if uri in entity_to_id]
 
-    # For every disease, what drug is most likely to treat it based on the network structure?
-    for disease_uri in diseases_list:
-        try:
-            # Ask the model to rank all possible head nodes (Drugs) for this disease
-            pred_df = predict_target(
-                model=model,
-                relation=TREATS_RELATION,
-                tail=disease_uri,
-                triples_factory=result.training,
-            ).df
+    if not valid_diseases or not valid_drugs:
+        logger.error("Not enough valid entities found in the trained model.")
+        return
 
-            # Filter the top predictions to ONLY include our known Drugs
-            drug_preds = pred_df[pred_df['head_label'].isin(drugs_list)].copy()
+    # Map URIs to their specific matrix indices
+    disease_indices = [entity_to_id[uri] for uri in valid_diseases]
+    drug_indices = [entity_to_id[uri] for uri in valid_drugs]
 
-            # Get the #1 most probable drug for this disease
-            if not drug_preds.empty:
-                top_drug = drug_preds.iloc[0]
-                predictions.append({
-                    "Disease": disease_uri.split('/')[-1],
-                    "Predicted_Drug": top_drug['head_label'].split('/')[-1],
-                    "Confidence_Score": top_drug['score']
-                })
-        except Exception as e:
-            # This happens if a node was entirely isolated and the model couldn't learn it
-            continue
+    # Extract sub-matrices for diseases and drugs
+    disease_matrix = entity_embeddings[disease_indices]
+    drug_matrix = entity_embeddings[drug_indices]
 
-    # Save the predictions to a CSV
+    # MATHEMATICAL OPTIMIZATION: Calculate distance of all pairs simultaneously
+    # cdist returns a matrix of shape (len(diseases), len(drugs))
+    distance_matrix = cdist(disease_matrix, drug_matrix, metric='euclidean')
+
+    # For each disease, find the index of the drug with the minimum distance
+    best_drug_indices = np.argmin(distance_matrix, axis=1)
+    min_distances = np.min(distance_matrix, axis=1)
+
+    # Build the final list of predictions instantly
+    predictions = [
+        {
+            "Disease": valid_diseases[i].split('/')[-1],
+            "Predicted_Drug": valid_drugs[best_drug_indices[i]].split('/')[-1],
+            "Confidence_Score": -min_distances[i]  # Negative so closest = highest score
+        }
+        for i in range(len(valid_diseases))
+    ]
+
+    # 4. Clean and Save Data
     df_predictions = pd.DataFrame(predictions)
-
-    # Sort by highest confidence
     df_predictions = df_predictions.sort_values(by="Confidence_Score", ascending=False)
+
     df_predictions.to_csv("../output/drug_repurposing_predictions.csv", index=False)
 
-    logger.info("Top 5 Novel Drug Repurposing Candidates:")
-    print(df_predictions.head(5))
+    logger.info("--- Top 5 Novel Drug Repurposing Candidates ---")
+    print(df_predictions.head(5).to_markdown())
 
     return df_predictions
 
+# Execute the script
+# run_drug_repurposing()

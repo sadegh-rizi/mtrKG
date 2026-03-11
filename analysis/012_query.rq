@@ -1,0 +1,24 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+
+
+SELECT ?ratioLabel ?metaboliteLabel ?reactionEquation ?tissueLabel
+WHERE {
+    # 1. Get the Ratio and its component metabolites
+    ?ratioNode a mtr:MetaboliteRatio ;
+               rdfs:label ?ratioLabel ;
+               mtr:has_numerator|mtr:has_denominator ?metaboliteNode .
+
+    ?metaboliteNode rdfs:label ?metaboliteLabel .
+
+    # 2. Find the Rhea Biochemical Reaction it participates in
+    ?metaboliteNode biolink:participates_in ?reactionNode .
+    ?reactionNode rdfs:label ?reactionEquation .
+
+    # 3. Find the HMDB tissue it is physically located in
+    ?metaboliteNode biolink:located_in ?tissueNode .
+    ?tissueNode a biolink:GrossAnatomicalStructure ;
+                rdfs:label ?tissueLabel .
+}
+LIMIT 10

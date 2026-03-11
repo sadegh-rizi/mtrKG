@@ -233,5 +233,16 @@ def build_schema(g):
     g.add((BIOLINK.located_in, RDFS.domain, BIOLINK.MolecularEntity))
     # We won't strictly enforce a single range here, as it could be a Cell Component OR Tissue
 
+    # ==========================================
+    # BIOCHEMISTRY (RHEA): CLASSES & PROPERTIES
+    # ==========================================
+
+    # 1. Define the Biochemical Reaction Class
+    g.add((BIOLINK.MolecularActivity, RDF.type, OWL.Class))
+    g.add((BIOLINK.MolecularActivity, RDFS.label, Literal("Biochemical Reaction / Molecular Activity")))
+
+    # Note: We can reuse the existing `biolink:participates_in` property
+    # we set up for Reactome. We just need to expand its range!
+    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.MolecularActivity))
 
     return g

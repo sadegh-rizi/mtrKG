@@ -1,0 +1,6 @@
+SELECT
+    (COUNT(*) AS ?triple_count)
+    (COUNT(DISTINCT ?s) AS ?node_count)
+    WHERE {
+    ?s ?p ?o .
+}

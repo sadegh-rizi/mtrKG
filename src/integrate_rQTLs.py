@@ -1,8 +1,23 @@
 import json
 import urllib.parse
+import logging
 from rdflib import Graph, Literal, RDF, URIRef, Namespace
 from rdflib.namespace import RDFS, XSD, SKOS
 from schema_definition import *
+
+# ==========================================
+# 1. SETUP LOGGING
+# ==========================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("../output/rqtl_integration.log", mode='w'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
 
 def clean_uri_string(text):
     """Utility to clean strings so they can be valid URIs."""
@@ -29,13 +44,23 @@ def add_safe_literal(graph, subject, predicate, value, datatype=None):
 
 
 def add_rqtl_to_graph(json_file_path, g):
+    logger.info(f"--- Starting rQTL JSON Integration ({json_file_path}) ---")
 
-    with open(json_file_path, 'r') as f:
-        data = json.load(f)
+    try:
+        with open(json_file_path, 'r') as f:
+            data = json.load(f)
+        logger.info(f"Successfully loaded JSON. Found {len(data)} rQTL entries to process.")
+    except Exception as e:
+        logger.error(f"Failed to load JSON file: {e}")
+        return g
 
-    for entry in data:
+    for i, entry in enumerate(data):
         ratio_id = entry['ratio_accession']
         ratio_node = MTR[ratio_id]
+
+        # Log progress periodically (every 10th item and the first/last item)
+        if i % 10 == 0 or i == len(data) - 1:
+            logger.info(f"[{i + 1}/{len(data)}] Processing rQTL network for ratio: {ratio_id}...")
 
         # ==========================================
         # 1. DEFINE RATIO NODE & TOP-LEVEL SUMMARIES
@@ -116,7 +141,7 @@ def add_rqtl_to_graph(json_file_path, g):
             add_safe_literal(g, assoc_node, MTR.se, stats.get('se'), XSD.float)
             add_safe_literal(g, assoc_node, MTR.z_score, stats.get('z'), XSD.float)
             add_safe_literal(g, assoc_node, MTR.maf, stats.get('maf'), XSD.float)
-            add_safe_literal(g, assoc_node, MTR.pgain, stats.get('pgain'), XSD.float)
+            add_safe_literal(g, assoc_node, MTR.pGain, stats.get('pgain'), XSD.float)
             add_safe_literal(g, assoc_node, MTR.effect_allele, stats.get('effect_allele'))
             add_safe_literal(g, assoc_node, MTR.reference_allele, stats.get('reference_allele'))
             add_safe_literal(g, assoc_node, MTR.numerator_driven, stats.get('numerator_driven'), XSD.boolean)
@@ -124,9 +149,12 @@ def add_rqtl_to_graph(json_file_path, g):
 
             # Link Closest Genes
             for gene in stats.get('closest_genes', []):
-                gene_node = HGNC[clean_uri_string(gene)]
+                safe_gene_name = clean_uri_string(gene)
+                gene_node = HGNC[safe_gene_name]
                 g.add((snp_node, MTR.closest_gene, gene_node))
-
+                # SHACL Fix: Ensure implicit genes have labels
+                g.add((gene_node, RDF.type, MTR.Gene))
+                g.add((gene_node, RDFS.label, Literal(safe_gene_name, datatype=XSD.string)))
             # ==========================================
             # 4. PROCESS MISSENSE VARIANTS IN LD
             # ==========================================
@@ -142,6 +170,8 @@ def add_rqtl_to_graph(json_file_path, g):
                     if missense.get('gene_name') != "NA":
                         ms_gene_node = HGNC[clean_uri_string(missense['gene_name'])]
                         g.add((ms_node, MTR.affects_gene, ms_gene_node))
+                        # SHACL Fix: Ensure implicit genes have labels
+                        g.add((ms_gene_node, RDFS.label, Literal(clean_uri_string(missense['gene_name']), datatype=XSD.string)))
 
             # ==========================================
             # 5. PROCESS CNVs (Copy Number Variants)
@@ -188,14 +218,35 @@ def add_rqtl_to_graph(json_file_path, g):
 
                         # B. Determine the Exposure Node Type
                         safe_exp = clean_uri_string(exposure_name)
-                        if dataset_name in ['eQTL', 'GTEx', 'rosmap']:
-                            exposure_node = HGNC[safe_exp]
-                            g.add((exposure_node, RDF.type, MTR.Gene))
-                        elif dataset_name in ['pQTL', 'western']:
+                        if dataset_name in ['eQTL', 'GTEx']:
+                            exposure_node = MTR[f"Transcript_{safe_exp}"]
+                            g.add((exposure_node, RDF.type, MTR.Transcript))
+
+                            # Add a label so human users know it's the RNA
+                            g.add((exposure_node, RDFS.label, Literal(f"{exposure_name} RNA", datatype=XSD.string)))
+
+                            # Instantiate the Parent Gene (DNA)
+                            parent_gene_node = HGNC[safe_exp]
+                            g.add((parent_gene_node, RDF.type, MTR.Gene))
+                            g.add((parent_gene_node, RDFS.label, Literal(exposure_name, datatype=XSD.string)))
+
+                            # Connect them! (Gene -> transcribes to -> Transcript)
+                            # Note: You can use BIOLINK.transcribes_to or BIOLINK.has_gene_product
+                            g.add((parent_gene_node, BIOLINK.transcribes_to, exposure_node))
+                        elif dataset_name in ['pQTL', 'western','rosmap']:
+                            # pQTLs map to the Protein
                             exposure_node = MTR[f"Protein_{safe_exp}"]
                             g.add((exposure_node, RDF.type, MTR.Protein))
+                            g.add((exposure_node, RDFS.label, Literal(exposure_name, datatype=XSD.string)))
+
+                            # FIX 2: Create the Parent Gene and bridge them!
+                            parent_gene_node = HGNC[safe_exp]
+                            g.add((parent_gene_node, RDF.type, MTR.Gene))
+                            g.add((parent_gene_node, RDFS.label, Literal(exposure_name, datatype=XSD.string)))
+
+                            # Connect them (Gene -> creates -> Protein)
+                            g.add((parent_gene_node, BIOLINK.has_gene_product, exposure_node))
                         else:
-                            # FinnGen, MR-Link, Yang (These are typically complex traits/diseases)
                             # FinnGen, MR-Link, Yang (Harmonized to match GWAS Catalog)
                             # We use EFO and BIOLINK.Disease so they overlap perfectly with GWAS!
                             exposure_node = EFO[f"Custom_{safe_exp}"]
@@ -203,7 +254,8 @@ def add_rqtl_to_graph(json_file_path, g):
                             g.add((exposure_node, RDFS.label, Literal(exposure_name)))
 
                         # C. Create the Causal Assessment Node
-                        assessment_id = f"Causal_{dataset_name}_{safe_exp}_to_{target_level}_{ratio_id}"
+                        # Make the ID unique to the SNP region as well!
+                        assessment_id = f"Causal_{dataset_name}_{safe_exp}_to_{target_level}_{ratio_id}_at_{rsid}"
                         assessment_node = MTR[assessment_id]
 
                         g.add((assessment_node, RDF.type, MTR.CausalAssessment))
@@ -211,6 +263,13 @@ def add_rqtl_to_graph(json_file_path, g):
                         g.add((assessment_node, MTR.target_level, Literal(target_level)))  # Tags it as mQTL or rQTL
                         g.add((assessment_node, MTR.has_exposure, exposure_node))
                         g.add((assessment_node, MTR.has_outcome, outcome_node))
+
+                        # THE CRITICAL FIX: Link the assessment back to the regional SNP
+                        g.add((assessment_node, MTR.associated_variant, snp_node))
+
+
+
+
 
                         # D. Attach all MR and Colocalization Statistics
                         # IVW (Inverse Variance Weighted) is standard MR
@@ -234,4 +293,5 @@ def add_rqtl_to_graph(json_file_path, g):
                         add_safe_literal(g, assessment_node, MTR.variance_explained, test.get('var_explained'),
                                          XSD.float)
 
+    logger.info("--- rQTL Integration Complete ---")
     return g

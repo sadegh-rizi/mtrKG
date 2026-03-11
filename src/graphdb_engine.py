@@ -20,12 +20,12 @@ def query_graphdb(query_input, repo_name="mtrKG", host="localhost", port=7200):
     # ==========================================
     if isinstance(query_input, str) and os.path.isfile(query_input):
         print(f"Reading SPARQL query from file: {query_input}")
-        with open(query_input, 'r', encoding='utf-8') as file:
+        with open(query_input, 'r', encoding='utf-8-sig') as file:
             query_string = file.read()
     else:
         # If it's not a valid file path, assume it is a raw SPARQL string
         query_string = query_input
-
+    query_string = query_string.strip().replace('\xa0', ' ').encode('ascii', 'ignore').decode('utf-8')
     # 1. Define the GraphDB endpoint URL
     # GraphDB always exposes repositories at /repositories/{name}
     endpoint_url = f"http://{host}:{port}/repositories/{repo_name}"
