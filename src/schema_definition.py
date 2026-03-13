@@ -1,13 +1,9 @@
-# core/namespaces.py
-from rdflib import Namespace
-import requests
-import time
-import urllib.parse
 from rdflib import Graph, Literal, RDF, URIRef, Namespace
 from rdflib.namespace import RDFS, XSD, OWL, SKOS
-import re
 
-
+# =========================
+# Namespaces
+# =========================
 MTR = Namespace("https://metabolite-ratio-app.unil.ch/rqtl/")
 BIOLINK = Namespace("https://w3id.org/biolink/vocab/")
 EFO = Namespace("http://www.ebi.ac.uk/efo/")
@@ -19,15 +15,13 @@ HMDB = Namespace("http://identifiers.org/hmdb/")
 DBSNP = Namespace("http://identifiers.org/dbsnp/")
 REACTOME = Namespace("https://reactome.org/content/detail/")
 PUBMED = Namespace("https://pubmed.ncbi.nlm.nih.gov/")
-UP = Namespace("http://purl.uniprot.org/core/")
-OBAN = Namespace("http://purl.org/oban/")
 SO = Namespace("http://purl.obolibrary.org/obo/SO_")
+SH = Namespace("http://www.w3.org/ns/shacl#")
 HGNC = Namespace("http://identifiers.org/hgnc.symbol/")
 
 
 
-def build_schema(g):
-    """Utility to bind all prefixes to the graph at once."""
+def bind_namespaces(g: Graph) -> Graph:
     g.bind("mtr", MTR)
     g.bind("biolink", BIOLINK)
     g.bind("efo", EFO)
@@ -39,210 +33,419 @@ def build_schema(g):
     g.bind("dbsnp", DBSNP)
     g.bind("reactome", REACTOME)
     g.bind("pubmed", PUBMED)
+    g.bind("so", SO)
+    g.bind("skos", SKOS)
+    g.bind("sh", SH)
+    return g
+
+
+def declare_class(g, uri, label, comment=None, superclass=None):
+    g.add((uri, RDF.type, OWL.Class))
+    g.add((uri, RDFS.label, Literal(label)))
+    if comment:
+        g.add((uri, RDFS.comment, Literal(comment)))
+    if superclass:
+        g.add((uri, RDFS.subClassOf, superclass))
+
+
+def declare_object_property(g, uri, label, domain=None, range_=None, comment=None, superprop=None):
+    g.add((uri, RDF.type, OWL.ObjectProperty))
+    g.add((uri, RDFS.label, Literal(label)))
+    if comment:
+        g.add((uri, RDFS.comment, Literal(comment)))
+    if domain:
+        g.add((uri, RDFS.domain, domain))
+    if range_:
+        g.add((uri, RDFS.range, range_))
+    if superprop:
+        g.add((uri, RDFS.subPropertyOf, superprop))
+
+
+def declare_datatype_property(g, uri, label, domain=None, range_=None, comment=None, superprop=None):
+    g.add((uri, RDF.type, OWL.DatatypeProperty))
+    g.add((uri, RDFS.label, Literal(label)))
+    if comment:
+        g.add((uri, RDFS.comment, Literal(comment)))
+    if domain:
+        g.add((uri, RDFS.domain, domain))
+    if range_:
+        g.add((uri, RDFS.range, range_))
+    if superprop:
+        g.add((uri, RDFS.subPropertyOf, superprop))
+
+
+def build_schema(g: Graph) -> Graph:
+    bind_namespaces(g)
 
     ontology_uri = URIRef("https://metabolite-ratio-app.unil.ch/ontology")
     g.add((ontology_uri, RDF.type, OWL.Ontology))
     g.add((ontology_uri, RDFS.label, Literal("rQTL Metabolic Ratio Ontology")))
-    g.add((ontology_uri, RDFS.comment, Literal("A schema defining genetically regulated metabolic reactions.")))
+    g.add((ontology_uri, RDFS.comment, Literal(
+        "Schema for rQTL metabolite ratios, variants, genes, molecular products, and causal evidence."
+    )))
 
-    # ==========================================
-    # 3. DEFINE CLASSES (The "Nouns")
-    # ==========================================
-    classes = {
-        "MetaboliteRatio": "A ratio between two metabolite concentrations.",
-        "Metabolite": "A small chemical compound.",
-        "SNP": "Single Nucleotide Polymorphism.",
-        "Gene": "A region of DNA.",
-        "Phenotype": "An observable clinical trait or disease."
-    }
+    # =========================
+    # Classes
+    # =========================
+    declare_class(g, MTR.MetaboliteRatio, "Metabolite Ratio", "A ratio between two metabolite concentrations.")
+    declare_class(g, MTR.Metabolite, "Metabolite", "A small chemical compound.", BIOLINK.ChemicalEntity)
+    declare_class(g, MTR.Gene, "Gene", "A genomic locus.", BIOLINK.Gene)
+    declare_class(g, MTR.Transcript, "Transcript", "An RNA transcript.", BIOLINK.Transcript)
+    declare_class(g, MTR.Protein, "Protein", "A translated gene product.", BIOLINK.Protein)
+    declare_class(g, MTR.Phenotype, "Phenotype", "A disease or phenotypic feature.", BIOLINK.DiseaseOrPhenotypicFeature)
 
-    for cls_name, description in classes.items():
-        node = MTR[cls_name]
-        g.add((node, RDF.type, OWL.Class))
-        g.add((node, RDFS.label, Literal(cls_name)))
-        g.add((node, RDFS.comment, Literal(description)))
+    declare_class(g, MTR.SNP, "SNP", "A single nucleotide polymorphism.", BIOLINK.SequenceVariant)
+    g.add((MTR.SNP, RDFS.subClassOf, SO["0000694"]))
 
-    # Integrate UniProt Enzyme class (as discussed previously)
-    g.add((MTR.Gene, RDFS.subClassOf, UP.Protein))  # A gene maps to a protein/enzyme
+    declare_class(g, MTR.MissenseVariant, "Missense Variant", "Missense sequence variant.", BIOLINK.SequenceVariant)
+    declare_class(g, MTR.CopyNumberVariant, "Copy Number Variant", "Copy number variant.", BIOLINK.SequenceVariant)
 
-    # ==========================================
-    # 4. DEFINE OBJECT PROPERTIES (The "Edges" between nodes)
-    # Here we define the Domain (starts at) and Range (ends at)
-    # ==========================================
+    declare_class(
+        g,
+        MTR.VariantToMetaboliteRatioAssociation,
+        "Variant to Metabolite Ratio Association",
+        "Association between a variant and a metabolite ratio.",
+        BIOLINK.Association,
+    )
+    declare_class(
+        g,
+        MTR.CausalAssessment,
+        "Causal Assessment",
+        "MR and colocalization-based causal assessment.",
+        BIOLINK.Association,
+    )
 
-    # Ratio -> Metabolite
-    g.add((MTR.has_numerator, RDF.type, OWL.ObjectProperty))
-    g.add((MTR.has_numerator, RDFS.domain, MTR.MetaboliteRatio))
-    g.add((MTR.has_numerator, RDFS.range, MTR.Metabolite))
+    declare_class(g, MTR.DatasetRelease, "Dataset Release", "Generated integrated dataset.", PROV.Entity)
+    declare_class(g, MTR.IntegrationRun, "Integration Run", "RDF integration activity.", PROV.Activity)
 
-    g.add((MTR.has_denominator, RDF.type, OWL.ObjectProperty))
-    g.add((MTR.has_denominator, RDFS.domain, MTR.MetaboliteRatio))
-    g.add((MTR.has_denominator, RDFS.range, MTR.Metabolite))
+    # =========================
+    # Object properties
+    # =========================
+    declare_object_property(g, MTR.has_numerator, "has numerator", MTR.MetaboliteRatio, MTR.Metabolite)
+    declare_object_property(g, MTR.has_denominator, "has denominator", MTR.MetaboliteRatio, MTR.Metabolite)
 
-    # SNP -> Gene
-    g.add((MTR.closest_gene, RDF.type, OWL.ObjectProperty))
-    g.add((MTR.closest_gene, RDFS.domain, MTR.SNP))
-    g.add((MTR.closest_gene, RDFS.range, MTR.Gene))
+    declare_object_property(g, MTR.closest_gene, "closest gene", BIOLINK.SequenceVariant, MTR.Gene)
+    declare_object_property(g, MTR.in_ld_with, "in LD with", BIOLINK.SequenceVariant, BIOLINK.SequenceVariant)
+    declare_object_property(g, MTR.affects_gene, "affects gene", BIOLINK.SequenceVariant, MTR.Gene)
+    declare_object_property(g, MTR.co_located_with_cnv, "co-located with CNV", BIOLINK.SequenceVariant, MTR.CopyNumberVariant)
 
-    g.add((MTR.is_eQTL_for, RDF.type, OWL.ObjectProperty))
-    g.add((MTR.is_eQTL_for, RDFS.domain, MTR.SNP))
-    g.add((MTR.is_eQTL_for, RDFS.range, MTR.Gene))
+    declare_object_property(g, MTR.associated_with_ratio, "associated with ratio", BIOLINK.SequenceVariant, MTR.MetaboliteRatio)
+    declare_object_property(g, MTR.causal_influence_on, "causal influence on")
 
-    # SNP -> Phenotype
-    g.add((MTR.associated_with_trait, RDF.type, OWL.ObjectProperty))
-    g.add((MTR.associated_with_trait, RDFS.domain, MTR.SNP))
-    g.add((MTR.associated_with_trait, RDFS.range, MTR.Phenotype))
+    declare_object_property(g, MTR.has_exposure, "has exposure", MTR.CausalAssessment)
+    declare_object_property(g, MTR.has_outcome, "has outcome", MTR.CausalAssessment)
+    declare_object_property(g, MTR.associated_variant, "associated variant", MTR.CausalAssessment, BIOLINK.SequenceVariant)
 
-    # ==========================================
-    # 5. DEFINE DATATYPE PROPERTIES (The "Edges" to values/numbers)
-    # ==========================================
+    # =========================
+    # Metabolite identifiers
+    # =========================
+    declare_datatype_property(g, MTR.hmdb_id, "HMDB ID", MTR.Metabolite, XSD.string)
+    declare_datatype_property(g, MTR.kegg_id, "KEGG ID", MTR.Metabolite, XSD.string)
+    declare_datatype_property(g, MTR.metabolon_id, "Metabolon ID", MTR.Metabolite, XSD.string)
+    declare_datatype_property(g, MTR.local_accession, "local accession", MTR.Metabolite, XSD.string)
+    declare_datatype_property(g, MTR.inchikey, "InChIKey", MTR.Metabolite, XSD.string)
 
-    # Association -> Float
-    g.add((MTR.p_value, RDF.type, OWL.DatatypeProperty))
-    g.add((MTR.p_value, RDFS.domain, OBAN.association))
-    g.add((MTR.p_value, RDFS.range, XSD.float))
+    # =========================
+    # Ratio properties
+    # =========================
+    declare_datatype_property(g, MTR.ratio_formula, "ratio formula", MTR.MetaboliteRatio, XSD.string)
+    declare_datatype_property(g, MTR.reaction_distance, "reaction distance", MTR.MetaboliteRatio, XSD.integer)
+    declare_datatype_property(g, MTR.max_pgain, "max p-gain", MTR.MetaboliteRatio, XSD.double)
 
-    g.add((MTR.beta, RDF.type, OWL.DatatypeProperty))
-    g.add((MTR.beta, RDFS.domain, OBAN.association))
-    g.add((MTR.beta, RDFS.range, XSD.float))
+    # LLM annotations
+    declare_datatype_property(g, MTR.llm_ratio_explanation, "LLM ratio explanation", MTR.MetaboliteRatio, XSD.string)
+    declare_datatype_property(g, MTR.llm_ratio_evidence, "LLM ratio evidence", MTR.MetaboliteRatio, XSD.string)
+    declare_datatype_property(g, MTR.llm_phenotype_driver, "LLM phenotype driver", MTR.MetaboliteRatio, XSD.string)
+    declare_datatype_property(g, MTR.llm_gene_phenotype_relationship, "LLM gene-phenotype relationship", MTR.MetaboliteRatio, XSD.string)
+    declare_datatype_property(g, MTR.llm_explanation, "LLM explanation", MTR.Metabolite, XSD.string)
 
-    g.add((MTR.pGain, RDF.type, OWL.DatatypeProperty))
-    g.add((MTR.pGain, RDFS.domain, OBAN.association))
-    g.add((MTR.pGain, RDFS.range, XSD.float))
+    # =========================
+    # Variant summary statistics
+    # =========================
+    declare_datatype_property(g, MTR.chromosome, "chromosome", BIOLINK.SequenceVariant, XSD.string)
+    declare_datatype_property(g, MTR.position, "position", BIOLINK.SequenceVariant, XSD.integer)
+    declare_datatype_property(g, MTR.pos_name, "position name", BIOLINK.SequenceVariant, XSD.string)
 
-    g.add((MTR.SNP, RDFS.subClassOf, SO["0000694"])) # SO:0000694 is 'SNP'
+    declare_datatype_property(g, MTR.effect_allele, "effect allele", BIOLINK.Association, XSD.string)
+    declare_datatype_property(g, MTR.reference_allele, "reference allele", BIOLINK.Association, XSD.string)
+    declare_datatype_property(g, MTR.maf, "minor allele frequency", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.beta, "beta", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.standard_error, "standard error", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.z_score, "z-score", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.log_p_value, "log p-value", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.beta_1, "beta numerator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.se_1, "SE numerator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.z_1, "z numerator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.beta_2, "beta denominator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.se_2, "SE denominator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.z_2, "z denominator", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.numerator_driven, "numerator driven", BIOLINK.Association, XSD.boolean)
+    declare_datatype_property(g, MTR.denominator_driven, "denominator driven", BIOLINK.Association, XSD.boolean)
+    declare_datatype_property(g, MTR.already_found, "already found", BIOLINK.Association, XSD.boolean)
+    declare_datatype_property(g, MTR.pgain, "p-gain", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.log_pgain, "log p-gain", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.infomap_cluster, "Infomap cluster", BIOLINK.Association, XSD.integer)
 
-    # 2. Hybrid Ontology Approach: Map custom edges to Biolink
-    g.add((MTR.is_eQTL_for, RDFS.subPropertyOf, BIOLINK.affects_expression_of))
-    g.add((MTR.associated_with_trait, RDFS.subPropertyOf, BIOLINK.associated_with))
+    # Missense / LD
+    declare_datatype_property(g, MTR.ld_score, "LD score", BIOLINK.SequenceVariant, XSD.double)
+    declare_datatype_property(g, MTR.variant_location, "variant location", BIOLINK.SequenceVariant, XSD.string)
+    declare_datatype_property(g, MTR.allele_change, "allele change", BIOLINK.SequenceVariant, XSD.string)
+    declare_datatype_property(g, MTR.consequence, "consequence", BIOLINK.SequenceVariant, XSD.string)
+    declare_datatype_property(g, MTR.codons, "codons", BIOLINK.SequenceVariant, XSD.string)
 
-    # 3. Hybrid Ontology Approach: Map statistics to SIO
-    g.add((MTR.p_value, RDFS.subPropertyOf, SIO["000765"])) # SIO:000765 is 'p-value'
-    g.add((MTR.beta, RDFS.subPropertyOf, SIO["001078"])) # SIO:001078 is 'beta' (or similar estimate)
+    # CNV
+    declare_datatype_property(g, MTR.num_cnv, "number of CNVs", MTR.CopyNumberVariant, XSD.integer)
+    declare_datatype_property(g, MTR.num_dup, "number of duplications", MTR.CopyNumberVariant, XSD.integer)
+    declare_datatype_property(g, MTR.num_del, "number of deletions", MTR.CopyNumberVariant, XSD.integer)
+    declare_datatype_property(g, MTR.num_neutral, "number of neutral", MTR.CopyNumberVariant, XSD.integer)
+    declare_datatype_property(g, MTR.freq_cnv, "CNV frequency", MTR.CopyNumberVariant, XSD.double)
+    declare_datatype_property(g, MTR.freq_dup, "duplication frequency", MTR.CopyNumberVariant, XSD.double)
+    declare_datatype_property(g, MTR.freq_del, "deletion frequency", MTR.CopyNumberVariant, XSD.double)
 
-    # 4. Add PROV-O metadata to your generated dataset
-    g.add((MTR.Dataset, RDF.type, PROV.Entity))
-    g.add((MTR.Dataset, PROV.wasGeneratedBy, Literal("Python JSON-to-RDF parser")))
+    # =========================
+    # Causal assessment metadata
+    # =========================
+    declare_datatype_property(g, MTR.dataset_source, "dataset source", MTR.CausalAssessment, XSD.string)
+    declare_datatype_property(g, MTR.target_level, "target level", MTR.CausalAssessment, XSD.string)
+    declare_datatype_property(g, MTR.causal_direction, "causal direction", MTR.CausalAssessment, XSD.string)
 
-    # --- HYBRID ALIGNMENTS ---
+    declare_datatype_property(g, MTR.exposure_file, "exposure file", MTR.CausalAssessment, XSD.string)
+    declare_datatype_property(g, MTR.outcome_file, "outcome file", MTR.CausalAssessment, XSD.string)
+    declare_datatype_property(g, MTR.region, "region", MTR.CausalAssessment, XSD.string)
+    declare_datatype_property(g, MTR.measured_in_tissue, "measured in tissue", MTR.CausalAssessment, XSD.string)
 
-    g.add((OBAN.association, OWL.equivalentClass, BIOLINK.Association))
-    g.add((OBAN.has_subject, OWL.equivalentProperty, BIOLINK.has_subject))
-    g.add((OBAN.has_object, OWL.equivalentProperty, BIOLINK.has_object))
+    declare_datatype_property(g, MTR.variance_explained, "variance explained", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.snps_overlap, "SNPs overlap", MTR.CausalAssessment, XSD.integer)
 
-    # ==========================================
-    # STRING DB: PROTEIN-PROTEIN INTERACTIONS
-    # ==========================================
+    declare_datatype_property(g, MTR.alpha, "alpha", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.se_alpha, "SE alpha", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.p_alpha, "p alpha", MTR.CausalAssessment, XSD.double)
 
-    # 1. Define the Interaction Category Class
-    g.add((BIOLINK.ProteinProteinInteraction, RDF.type, OWL.Class))
-    g.add((BIOLINK.ProteinProteinInteraction, RDFS.subClassOf, BIOLINK.Association))
-    g.add((BIOLINK.ProteinProteinInteraction, RDFS.label, Literal("Protein-Protein Interaction")))
+    declare_datatype_property(g, MTR.sigma_y, "sigma y", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.se_sigma_y, "SE sigma y", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.p_sigma_y, "p sigma y", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.sigma_x, "sigma x", MTR.CausalAssessment, XSD.double)
 
-    # 2. Define the Direct Interaction Property
-    g.add((BIOLINK.interacts_with, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.interacts_with, RDFS.label, Literal("interacts with")))
-    g.add((BIOLINK.interacts_with, RDFS.domain, MTR.Gene))  # From a Gene/Protein
-    g.add((BIOLINK.interacts_with, RDFS.range, MTR.Gene))  # To another Gene/Protein
+    declare_datatype_property(g, MTR.beta_ivw, "beta IVW", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.se_ivw, "SE IVW", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.p_ivw, "p IVW", MTR.CausalAssessment, XSD.double)
 
-    # 3. Define the Interaction Score Property (Datatype)
-    g.add((MTR.interaction_score, RDF.type, OWL.DatatypeProperty))
-    g.add((MTR.interaction_score, RDFS.label, Literal("STRING interaction score")))
-    # Assuming you applied the ontology alignment, binding to BIOLINK.Association covers OBAN too
-    g.add((MTR.interaction_score, RDFS.domain, BIOLINK.Association))
-    g.add((MTR.interaction_score, RDFS.range, XSD.float))
+    declare_datatype_property(g, MTR.beta_ivw_r, "beta IVW reverse", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.se_ivw_r, "SE IVW reverse", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.p_ivw_r, "p IVW reverse", MTR.CausalAssessment, XSD.double)
 
-    # ==========================================
-    # EPIGENETICS (EWAS): CLASSES & PROPERTIES
-    # ==========================================
+    declare_datatype_property(g, MTR.beta_pca, "beta PCA", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.se_pca, "SE PCA", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.p_pca, "p PCA", MTR.CausalAssessment, XSD.double)
 
-    # 1. Define the Genomic Entity Class (for CpG Methylation Sites)
-    g.add((BIOLINK.GenomicEntity, RDF.type, OWL.Class))
-    g.add((BIOLINK.GenomicEntity, RDFS.label, Literal("Genomic Entity")))
-    g.add((BIOLINK.GenomicEntity, RDFS.comment,
-           Literal("A structural or functional feature of a genome, such as a CpG site.")))
+    declare_datatype_property(g, MTR.coloc_h1, "coloc H1", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.coloc_h2, "coloc H2", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.coloc_h3, "coloc H3", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.coloc_h4, "coloc H4", MTR.CausalAssessment, XSD.double)
 
-    # 2. Define the Phenotypic Feature Class (for Environmental Traits / Biomarkers)
-    # Note: You might already have biolink:Disease, this broadens it to non-disease traits like BMI or smoking
-    g.add((BIOLINK.PhenotypicFeature, RDF.type, OWL.Class))
-    g.add((BIOLINK.PhenotypicFeature, RDFS.label, Literal("Phenotypic Feature")))
+    declare_datatype_property(g, MTR.susie_h1, "SuSiE H1", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.susie_h2, "SuSiE H2", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.susie_h3, "SuSiE H3", MTR.CausalAssessment, XSD.double)
+    declare_datatype_property(g, MTR.susie_h4, "SuSiE H4", MTR.CausalAssessment, XSD.double)
 
-    # 3. Define the 'regulates' Object Property
-    g.add((BIOLINK.regulates, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.regulates, RDFS.label, Literal("regulates")))
+    # GWAS-specific datatype properties
+    declare_datatype_property(g, MTR.beta_unit, "beta unit", BIOLINK.Association, XSD.string)
+    declare_datatype_property(g, MTR.ci_lower, "confidence interval lower bound", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.ci_upper, "confidence interval upper bound", BIOLINK.Association, XSD.double)
 
-    # Strict typing: Only Genomic Entities (CpGs) can regulate Genes in this context
-    g.add((BIOLINK.regulates, RDFS.domain, BIOLINK.GenomicEntity))
-    g.add((BIOLINK.regulates, RDFS.range, MTR.Gene))
+    # If not already present
+    declare_datatype_property(g, MTR.beta, "beta", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.effect_allele, "effect allele", BIOLINK.Association, XSD.string)
 
-    # Define the overlaps property for Genomic Entities
-    g.add((BIOLINK.overlaps, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.overlaps, RDFS.label, Literal("overlaps with")))
-    g.add((BIOLINK.overlaps, RDFS.domain, MTR.SNP))
-    g.add((BIOLINK.overlaps, RDFS.range, BIOLINK.GenomicEntity))
+    # Reactome-specific datatype properties
+    declare_datatype_property(g, MTR.reactome_source_type, "Reactome source type", BIOLINK.Association, XSD.string)
+    declare_datatype_property(g, MTR.reactome_analysis_token, "Reactome analysis token", BIOLINK.Association,
+                              XSD.string)
+    declare_datatype_property(g, MTR.reactome_species, "Reactome species", BIOLINK.Association, XSD.string)
 
-    # ==========================================
-    # PATHWAYS (REACTOME): CLASSES & PROPERTIES
-    # ==========================================
+    declare_datatype_property(g, MTR.reactome_entities_p_value, "Reactome entities p-value", BIOLINK.Association,
+                              XSD.double)
+    declare_datatype_property(g, MTR.reactome_entities_fdr, "Reactome entities FDR", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.reactome_entities_found, "Reactome entities found", BIOLINK.Association,
+                              XSD.integer)
+    declare_datatype_property(g, MTR.reactome_entities_total, "Reactome entities total", BIOLINK.Association,
+                              XSD.integer)
 
-    # 1. Define the Pathway Class
-    g.add((BIOLINK.Pathway, RDF.type, OWL.Class))
-    g.add((BIOLINK.Pathway, RDFS.label, Literal("Biological Pathway")))
+    declare_datatype_property(g, MTR.reactome_reactions_found, "Reactome reactions found", BIOLINK.Association,
+                              XSD.integer)
+    declare_datatype_property(g, MTR.reactome_reactions_total, "Reactome reactions total", BIOLINK.Association,
+                              XSD.integer)
 
-    # 2. Define the 'participates_in' Object Property
-    g.add((BIOLINK.participates_in, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.participates_in, RDFS.label, Literal("participates in")))
+    declare_class(
+        g,
+        MTR.MetaboliteLocationAssociation,
+        "Metabolite Location Association",
+        "Association between a metabolite and a biological location asserted from HMDB.",
+        BIOLINK.Association,
+    )
 
-    # Strict typing: Only Genes/Proteins can participate in Pathways
-    g.add((BIOLINK.participates_in, RDFS.domain, MTR.Gene))
-    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.Pathway))
+    declare_datatype_property(
+        g,
+        MTR.source_dataset,
+        "source dataset",
+        BIOLINK.Association,
+        XSD.string,
+    )
 
-    # ==========================================
-    # PATHWAYS (REACTOME): CLASSES & PROPERTIES
-    # ==========================================
+    declare_datatype_property(
+        g,
+        MTR.location_category,
+        "location category",
+        BIOLINK.Association,
+        XSD.string,
+    )
 
-    # 1. Define a Parent Class for both Genes and Metabolites
-    g.add((BIOLINK.MolecularEntity, RDF.type, OWL.Class))
-    g.add((MTR.Gene, RDFS.subClassOf, BIOLINK.MolecularEntity))
-    g.add((MTR.Metabolite, RDFS.subClassOf, BIOLINK.MolecularEntity))
+    declare_class(
+        g,
+        MTR.BiochemicalReaction,
+        "Biochemical Reaction",
+        "A biochemical reaction from Rhea.",
+        BIOLINK.MolecularActivity,
+    )
 
-    # 2. Define the Pathway Class
-    g.add((BIOLINK.Pathway, RDF.type, OWL.Class))
-    g.add((BIOLINK.Pathway, RDFS.label, Literal("Biological Pathway")))
+    declare_datatype_property(
+        g,
+        MTR.rhea_equation,
+        "Rhea equation",
+        MTR.BiochemicalReaction,
+        XSD.string,
+    )
 
-    # 3. Define the 'participates_in' Object Property
-    g.add((BIOLINK.participates_in, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.participates_in, RDFS.label, Literal("participates in")))
+    declare_datatype_property(
+        g,
+        MTR.rhea_ec_number,
+        "Rhea EC number",
+        MTR.BiochemicalReaction,
+        XSD.string,
+    )
 
-    # Update Domain: Now BOTH Genes and Metabolites can participate in pathways!
-    g.add((BIOLINK.participates_in, RDFS.domain, BIOLINK.MolecularEntity))
-    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.Pathway))
+    declare_datatype_property(
+        g,
+        MTR.rhea_status,
+        "Rhea status",
+        MTR.BiochemicalReaction,
+        XSD.string,
+    )
 
-    # 1. Define the Classes
-    g.add((BIOLINK.CellularComponent, RDF.type, OWL.Class))
-    g.add((BIOLINK.CellularComponent, RDFS.label, Literal("Cellular Component")))
+    declare_datatype_property(
+        g, MTR.string_identifier, "STRING identifier", MTR.Gene, XSD.string
+    )
 
-    g.add((BIOLINK.GrossAnatomicalStructure, RDF.type, OWL.Class))
-    g.add((BIOLINK.GrossAnatomicalStructure, RDFS.label, Literal("Tissue or Biofluid")))
+    declare_datatype_property(
+        g, MTR.string_combined_score, "STRING combined score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
 
-    # 2. Define the 'located_in' Object Property
-    g.add((BIOLINK.located_in, RDF.type, OWL.ObjectProperty))
-    g.add((BIOLINK.located_in, RDFS.label, Literal("located in")))
+    declare_datatype_property(
+        g, MTR.string_network_type, "STRING network type", BIOLINK.PairwiseGeneToGeneInteraction, XSD.string
+    )
 
-    # Domain is the Molecular Entity (Metabolite or Protein)
-    g.add((BIOLINK.located_in, RDFS.domain, BIOLINK.MolecularEntity))
-    # We won't strictly enforce a single range here, as it could be a Cell Component OR Tissue
+    declare_datatype_property(
+        g, MTR.string_experimental_score, "STRING experimental score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_database_score, "STRING database score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_textmining_score, "STRING text mining score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_coexpression_score, "STRING coexpression score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_neighborhood_score, "STRING neighborhood score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_fusion_score, "STRING fusion score", BIOLINK.PairwiseGeneToGeneInteraction, XSD.double
+    )
+    declare_datatype_property(
+        g, MTR.string_phylogenetic_score, "STRING phylogenetic profile score", BIOLINK.PairwiseGeneToGeneInteraction,
+        XSD.double
+    )
+    declare_class(
+        g,
+        MTR.VariantToRegulatoryFeatureOverlapAssociation,
+        "Variant to Regulatory Feature Overlap Association",
+        "An association recording that a sequence variant overlaps an Ensembl regulatory feature.",
+        BIOLINK.Association,
+    )
 
-    # ==========================================
-    # BIOCHEMISTRY (RHEA): CLASSES & PROPERTIES
-    # ==========================================
+    declare_datatype_property(
+        g, MTR.external_feature_id, "external feature ID", BIOLINK.RegulatoryRegion, XSD.string
+    )
 
-    # 1. Define the Biochemical Reaction Class
-    g.add((BIOLINK.MolecularActivity, RDF.type, OWL.Class))
-    g.add((BIOLINK.MolecularActivity, RDFS.label, Literal("Biochemical Reaction / Molecular Activity")))
+    declare_datatype_property(
+        g, MTR.feature_description, "feature description", BIOLINK.RegulatoryRegion, XSD.string
+    )
 
-    # Note: We can reuse the existing `biolink:participates_in` property
-    # we set up for Reactome. We just need to expand its range!
-    g.add((BIOLINK.participates_in, RDFS.range, BIOLINK.MolecularActivity))
+    declare_datatype_property(
+        g, MTR.assembly_name, "assembly name", BIOLINK.NamedThing, XSD.string
+    )
 
+    declare_datatype_property(
+        g, MTR.query_region, "query region", BIOLINK.Association, XSD.string
+    )
+
+    # if not already present elsewhere
+    declare_datatype_property(g, MTR.chromosome, "chromosome", BIOLINK.GenomicEntity, XSD.string)
+    declare_datatype_property(g, MTR.start_position, "start position", BIOLINK.GenomicEntity, XSD.integer)
+    declare_datatype_property(g, MTR.end_position, "end position", BIOLINK.GenomicEntity, XSD.integer)
+
+    declare_datatype_property(
+        g, MTR.genomic_location, "genomic location", BIOLINK.SequenceVariant, XSD.string
+    )
+
+    # Classes
+    declare_class(
+        g,
+        MTR.TargetSafetyLiabilityAssociation,
+        "Target Safety Liability Association",
+        "Association between a gene target and a disease/phenotypic feature representing a safety liability.",
+        BIOLINK.GeneToPhenotypicFeatureAssociation,
+    )
+
+    declare_class(
+        g,
+        MTR.OpenTargetsDatasourceScore,
+        "Open Targets Datasource Score",
+        "A per-datasource score attached to an Open Targets association.",
+    )
+
+    # Object properties
+    declare_object_property(
+        g,
+        MTR.has_safety_liability,
+        "has safety liability",
+        MTR.Gene,
+        BIOLINK.DiseaseOrPhenotypicFeature,
+        superprop=BIOLINK.affects,
+    )
+
+    declare_object_property(
+        g,
+        MTR.about_association,
+        "about association",
+        MTR.OpenTargetsDatasourceScore,
+        BIOLINK.Association,
+    )
+
+    # Datatype properties
+    declare_datatype_property(g, MTR.open_targets_target_id, "Open Targets target ID", MTR.Gene, XSD.string)
+    declare_datatype_property(g, MTR.small_molecule_tractable, "small molecule tractable", MTR.Gene, XSD.boolean)
+    declare_datatype_property(g, MTR.antibody_tractable, "antibody tractable", MTR.Gene, XSD.boolean)
+    declare_datatype_property(g, MTR.protac_tractable, "PROTAC tractable", MTR.Gene, XSD.boolean)
+    declare_datatype_property(g, MTR.other_clinical_tractable, "other clinical tractable", MTR.Gene, XSD.boolean)
+
+    declare_datatype_property(g, MTR.external_event_id, "external event ID", BIOLINK.Association, XSD.string)
+    declare_datatype_property(g, MTR.tissue_context, "tissue context", BIOLINK.Association, XSD.string)
+
+    declare_datatype_property(g, MTR.max_clinical_phase, "max clinical phase", BIOLINK.NamedThing, XSD.integer)
+
+    declare_datatype_property(g, MTR.ot_genetics_score, "Open Targets genetics score", BIOLINK.Association, XSD.double)
+    declare_datatype_property(g, MTR.datasource_id, "datasource ID", MTR.OpenTargetsDatasourceScore, XSD.string)
+    declare_datatype_property(g, MTR.datasource_score, "datasource score", MTR.OpenTargetsDatasourceScore, XSD.double)
     return g

@@ -1,0 +1,69 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  # 1. The Cautious Direct Edge (For simple graph visualization)
+  ?drug mtr:predicted_to_target ?disease_node .
+
+  # 2. The Reified Association Node (For rigorous provenance)
+  ?inference_node a mtr:InferredTherapeuticAssociation ;
+                  biolink:subject ?drug ;
+                  biolink:object ?disease_node ;
+                  biolink:predicate mtr:predicted_to_target ;
+
+                  # EXPLICITLY state this is a graph prediction, not clinical truth
+                  prov:wasGeneratedBy mtr:SymbolicGraphInference ;
+                  biolink:has_evidence mtr:ComputationalGraphTraversal ;
+                  rdfs:comment "This edge was logically inferred from structural graph topology and has not been biologically validated." ;
+
+                  # Link back to the mechanism driving the prediction
+                  mtr:mechanistically_driven_by ?ratio_node .
+}
+WHERE {
+  # ---------------------------------------------------------
+  # 1. CLINICAL: What complex disease is caused by a genetic variant?
+  # ---------------------------------------------------------
+  ?gwas_edge a biolink:Association ;
+             biolink:has_subject ?snp ;
+             biolink:has_object ?disease_node .
+
+  ?disease_node a biolink:Disease .
+
+  # We keep this filter just to exclude the 'particle size' phenotypes
+  ?disease_node rdfs:label ?disease .
+  FILTER(!CONTAINS(LCASE(?disease), "particle size"))
+
+  # ---------------------------------------------------------
+  # 2. METABOLIC: What metabolite ratio does that variant disrupt?
+  # ---------------------------------------------------------
+  ?rqtl_edge a biolink:Association ;
+             biolink:has_subject ?snp ;
+             biolink:has_object ?ratio_node .
+
+  # ---------------------------------------------------------
+  # 3. GENOMIC: What causal gene drives this ratio? (MR Evidence)
+  # ---------------------------------------------------------
+  ?causal_edge a mtr:CausalAssessment ;
+               mtr:has_exposure ?gene_node ;
+               mtr:has_outcome ?ratio_node .
+
+  ?gene_node a mtr:Gene .
+
+  # ---------------------------------------------------------
+  # 4. MECHANISTIC: What biological pathway is that gene a part of?
+  # ---------------------------------------------------------
+  ?gene_node biolink:participates_in ?pathway_node .
+
+  # ---------------------------------------------------------
+  # 5. PHARMACOLOGY: ONLY include results that have a Drug Target!
+  # ---------------------------------------------------------
+  ?drug biolink:targets|biolink:interacts_with ?gene_node .
+  ?drug a biolink:Drug .
+
+  # ---------------------------------------------------------
+  # Generate the Unique ID for the new Inference Node
+  # ---------------------------------------------------------
+  BIND(URI(CONCAT("https://metabolite-ratio-app.unil.ch/rqtl/inference/", MD5(CONCAT(STR(?drug), STR(?disease_node))))) AS ?inference_node)
+}

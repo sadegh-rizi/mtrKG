@@ -1,0 +1,21 @@
+ratio_name,causal_gene_name,interacting_gene_name,interaction_score,drug_name,clinical_phase
+1-palmitoleoyl-gpc (16:1)* to stearoylcarnitine (c18),NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to sphingomyelin (d18:2/21:0, d16:2/23:0)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoleoyl-gpc (16:1)* to 1-myristoyl-2-palmitoyl-gpc (14:0/16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoleoyl-gpc (16:1)* to 1-palmitoyl-gpc (16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-stearoyl-gpg (18:0) to 2-palmitoleoyl-gpc (16:1)*,NDUFB8,NDUFA7,0.999,METFORMIN,4
+2-palmitoleoyl-gpc (16:1)* to stearoylcarnitine (c18),NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to palmitoleoylcarnitine (c16:1)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to sphingomyelin (d18:2/23:1)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoyl-2-palmitoleoyl-gpc (16:0/16:1)* to 1-myristoyl-2-palmitoyl-gpc (14:0/16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:2/24:1, d18:1/24:2)* to sphingomyelin (d18:1/18:1, d18:2/18:0)",NDUFB8,NDUFA7,0.999,METFORMIN,4
+palmitoleoylcarnitine (c16:1)* to stearoylcarnitine (c18),NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoleoyl-gpc (16:1)* to stearoylcarnitine (c18),NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to sphingomyelin (d18:2/21:0, d16:2/23:0)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoleoyl-gpc (16:1)* to 1-myristoyl-2-palmitoyl-gpc (14:0/16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoleoyl-gpc (16:1)* to 1-palmitoyl-gpc (16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-stearoyl-gpg (18:0) to 2-palmitoleoyl-gpc (16:1)*,NDUFB8,NDUFA7,0.999,METFORMIN,4
+2-palmitoleoyl-gpc (16:1)* to stearoylcarnitine (c18),NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to palmitoleoylcarnitine (c16:1)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+"sphingomyelin (d18:1/18:1, d18:2/18:0) to sphingomyelin (d18:2/23:1)*",NDUFB8,NDUFA7,0.999,METFORMIN,4
+1-palmitoyl-2-palmitoleoyl-gpc (16:0/16:1)* to 1-myristoyl-2-palmitoyl-gpc (14:0/16:0),NDUFB8,NDUFA7,0.999,METFORMIN,4
