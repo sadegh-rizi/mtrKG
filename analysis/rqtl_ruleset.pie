@@ -1,0 +1,85 @@
+Prefices {
+    rdf      : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+    rdfs     : http://www.w3.org/2000/01/rdf-schema#
+    biolink  : https://w3id.org/biolink/vocab/
+    mtr      : https://metabolite-ratio-app.unil.ch/rqtl/
+}
+
+Axioms {
+    <mtr:putatively_implicates_gene> rdf:type rdf:Property
+    <mtr:putatively_reflects_pathway> rdf:type rdf:Property
+    <mtr:putatively_implicates_disease> rdf:type rdf:Property
+    <mtr:has_candidate_therapeutic_target> rdf:type rdf:Property
+
+    <mtr:putatively_implicates_gene> rdfs:subPropertyOf <biolink:related_to>
+    <mtr:putatively_reflects_pathway> rdfs:subPropertyOf <biolink:related_to>
+    <mtr:putatively_implicates_disease> rdfs:subPropertyOf <biolink:related_to>
+    <mtr:has_candidate_therapeutic_target> rdfs:subPropertyOf <biolink:related_to>
+}
+
+Rules
+{
+Id: eqtl_variant_gene
+    s <mtr:is_eQTL_for> g
+    ------------------------------------
+    s <mtr:putatively_implicates_gene> g
+}
+
+{
+Id: closest_gene_variant_gene
+    s <mtr:closest_gene> g
+    ------------------------------------
+    s <mtr:putatively_implicates_gene> g
+}
+
+{
+Id: missense_variant_gene
+    v <mtr:affects_gene> g
+    ------------------------------------
+    v <mtr:putatively_implicates_gene> g
+}
+
+{
+Id: ratio_shared_pathway
+    r <mtr:has_numerator> m1
+    r <mtr:has_denominator> m2
+    m1 <biolink:participates_in> p
+    m2 <biolink:participates_in> p
+    ------------------------------------
+    r <mtr:putatively_reflects_pathway> p
+}
+
+{
+Id: snp_gene_disease_from_gene_condition_assoc
+    s <mtr:putatively_implicates_gene> g
+    a rdf:type <biolink:GeneToDiseaseOrPhenotypicFeatureAssociation>
+    a <biolink:subject> g
+    a <biolink:object> d
+    ------------------------------------
+    s <mtr:putatively_implicates_disease> d
+}
+
+{
+Id: ratio_pathway_disease_via_gene
+    r <mtr:putatively_reflects_pathway> p
+    gp rdf:type <biolink:GeneToPathwayAssociation>
+    gp <biolink:object> p
+    gp <biolink:subject> g
+    gd rdf:type <biolink:GeneToDiseaseOrPhenotypicFeatureAssociation>
+    gd <biolink:subject> g
+    gd <biolink:object> d
+    ------------------------------------
+    r <mtr:putatively_implicates_disease> d
+}
+
+{
+Id: drug_target_disease_candidate
+    dg rdf:type <biolink:DrugToGeneAssociation>
+    dg <biolink:subject> drug
+    dg <biolink:object> gene
+    ga rdf:type <biolink:GeneToDiseaseOrPhenotypicFeatureAssociation>
+    ga <biolink:subject> gene
+    ga <biolink:object> disease
+    ------------------------------------
+    drug <mtr:has_candidate_therapeutic_target> disease
+}

@@ -1,0 +1,912 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mtr: <https://metabolite-ratio-app.unil.ch/rqtl/> .
+@prefix biolink: <https://w3id.org/biolink/vocab/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+
+#################################################################
+# CORE ENTITY SHAPES
+#################################################################
+
+mtr:MetaboliteRatioShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:MetaboliteRatio ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:has_numerator ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Metabolite ;
+    ] ;
+    sh:property [
+        sh:path mtr:has_denominator ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Metabolite ;
+    ] ;
+    sh:property [
+        sh:path mtr:ratio_formula ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:reaction_distance ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:max_pgain ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "A metabolite ratio cannot have the same metabolite as both numerator and denominator." ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:has_numerator ?m .
+              $this mtr:has_denominator ?m .
+            }
+        """ ;
+    ] .
+
+mtr:MetaboliteShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:Metabolite ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:inchikey ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "A metabolite should have at least one identifier property (HMDB, KEGG, accession, metabolon, or InChIKey)." ;
+        sh:severity sh:Warning ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              FILTER NOT EXISTS { $this mtr:hmdb_id ?h }
+              FILTER NOT EXISTS { $this mtr:kegg_id ?k }
+              FILTER NOT EXISTS { $this mtr:local_accession ?a }
+              FILTER NOT EXISTS { $this mtr:metabolon_id ?m }
+              FILTER NOT EXISTS { $this mtr:inchikey ?i }
+            }
+        """ ;
+    ] .
+
+mtr:GeneShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:Gene ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:string_identifier ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:open_targets_target_id ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:SNPShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:SNP ;
+    sh:nodeKind sh:IRI ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^rs[0-9]+$" ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:chromosome ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:position ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:genomic_location ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "A SNP should have either a numeric position or a genomic_location string." ;
+        sh:severity sh:Warning ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              FILTER NOT EXISTS { $this mtr:position ?p }
+              FILTER NOT EXISTS { $this mtr:genomic_location ?g }
+            }
+        """ ;
+    ] .
+
+mtr:MissenseVariantShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:MissenseVariant ;
+    sh:property [
+        sh:path mtr:affects_gene ;
+        sh:minCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path mtr:ld_score ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:CopyNumberVariantShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:CopyNumberVariant ;
+    sh:property [
+        sh:path mtr:chromosome ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:num_cnv ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:num_dup ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:num_del ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:freq_cnv ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:freq_dup ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:freq_del ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] .
+
+#################################################################
+# CORE ASSOCIATION SHAPES
+#################################################################
+
+mtr:VariantToMetaboliteRatioAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:VariantToMetaboliteRatioAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:SNP ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:MetaboliteRatio ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue mtr:associated_with_ratio ;
+    ] ;
+    sh:property [
+        sh:path mtr:maf ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:beta ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:standard_error ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:z_score ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:numerator_driven ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:denominator_driven ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "numerator_driven and denominator_driven cannot both be true." ;
+        sh:severity sh:Warning ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:numerator_driven true ;
+                    mtr:denominator_driven true .
+            }
+        """ ;
+    ] .
+
+mtr:CausalAssessmentShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:CausalAssessment ;
+    sh:property [
+        sh:path mtr:has_exposure ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+    ] ;
+    sh:property [
+        sh:path mtr:has_outcome ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+    ] ;
+    sh:property [
+        sh:path mtr:associated_variant ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:SNP ;
+    ] ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue mtr:causal_influence_on ;
+    ] ;
+    sh:property [
+        sh:path mtr:dataset_source ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:target_level ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "ratio" "numerator_metabolite" "denominator_metabolite" ) ;
+    ] ;
+    sh:property [
+        sh:path mtr:causal_direction ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "external_to_local" "local_to_trait" ) ;
+    ] ;
+    sh:property [
+        sh:path mtr:p_ivw ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:p_ivw_r ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:p_pca ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:p_alpha ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:coloc_h1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:coloc_h2 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:coloc_h3 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:coloc_h4 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:susie_h1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:susie_h2 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:susie_h3 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:susie_h4 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:snps_overlap ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "For target_level=ratio, the outcome must be a MetaboliteRatio; for numerator/denominator_metabolite it must be a Metabolite." ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:target_level ?lvl ;
+                    mtr:has_outcome ?out .
+              FILTER(
+                (STR(?lvl) = "ratio" && NOT EXISTS { ?out a mtr:MetaboliteRatio }) ||
+                ((STR(?lvl) = "numerator_metabolite" || STR(?lvl) = "denominator_metabolite") && NOT EXISTS { ?out a mtr:Metabolite })
+              )
+            }
+        """ ;
+    ] ;
+    sh:sparql [
+        sh:message "dataset_source eQTL/GTEx requires Transcript exposure and local outcome." ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:dataset_source ?ds ;
+                    mtr:has_exposure ?exp ;
+                    mtr:has_outcome ?out .
+              FILTER(STR(?ds) = "eQTL" || STR(?ds) = "GTEx")
+              FILTER(
+                NOT EXISTS { ?exp a mtr:Transcript } ||
+                NOT EXISTS { { ?out a mtr:MetaboliteRatio } UNION { ?out a mtr:Metabolite } }
+              )
+            }
+        """ ;
+    ] ;
+    sh:sparql [
+        sh:message "dataset_source pQTL/western/rosmap requires Protein exposure and local outcome." ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:dataset_source ?ds ;
+                    mtr:has_exposure ?exp ;
+                    mtr:has_outcome ?out .
+              FILTER(STR(?ds) = "pQTL" || STR(?ds) = "western" || STR(?ds) = "rosmap")
+              FILTER(
+                NOT EXISTS { ?exp a mtr:Protein } ||
+                NOT EXISTS { { ?out a mtr:MetaboliteRatio } UNION { ?out a mtr:Metabolite } }
+              )
+            }
+        """ ;
+    ] ;
+    sh:sparql [
+        sh:message "dataset_source finngen/mrlink2_traits requires local exposure and Phenotype outcome." ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            SELECT $this
+            WHERE {
+              $this mtr:dataset_source ?ds ;
+                    mtr:has_exposure ?exp ;
+                    mtr:has_outcome ?out .
+              FILTER(STR(?ds) = "finngen" || STR(?ds) = "mrlink2_traits")
+              FILTER(
+                NOT EXISTS { { ?exp a mtr:MetaboliteRatio } UNION { ?exp a mtr:Metabolite } } ||
+                NOT EXISTS { ?out a mtr:Phenotype }
+              )
+            }
+        """ ;
+    ] ;
+    sh:sparql [
+        sh:message "biolink:subject/object should mirror mtr:has_exposure/has_outcome." ;
+        sh:severity sh:Warning ;
+        sh:select """
+            PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+            PREFIX biolink: <https://w3id.org/biolink/vocab/>
+            SELECT $this
+            WHERE {
+              $this mtr:has_exposure ?exp ;
+                    mtr:has_outcome ?out ;
+                    biolink:subject ?s ;
+                    biolink:object ?o .
+              FILTER(?s != ?exp || ?o != ?out)
+            }
+        """ ;
+    ] .
+
+#################################################################
+# REGULATORY / FUNCTIONAL ENRICHMENT SHAPES
+#################################################################
+
+mtr:VariantToRegulatoryFeatureOverlapAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:VariantToRegulatoryFeatureOverlapAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:SNP ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:RegulatoryRegion ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:overlaps ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .
+
+#################################################################
+# NETWORK / INTERACTION ENRICHMENT SHAPES
+#################################################################
+
+mtr:PairwiseGeneToGeneInteractionShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:PairwiseGeneToGeneInteraction ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:interacts_with ;
+    ] ;
+    sh:property [
+        sh:path mtr:string_combined_score ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:sparql [
+        sh:message "A pairwise interaction should not be self-referential." ;
+        sh:severity sh:Warning ;
+        sh:select """
+            PREFIX biolink: <https://w3id.org/biolink/vocab/>
+            SELECT $this
+            WHERE {
+              $this biolink:subject ?s ;
+                    biolink:object ?o .
+              FILTER(?s = ?o)
+            }
+        """ ;
+    ] .
+
+#################################################################
+# PATHWAY ENRICHMENT SHAPES
+#################################################################
+
+mtr:GeneToPathwayAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:GeneToPathwayAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:Pathway ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:participates_in ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:ChemicalEntityToPathwayAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:ChemicalEntityToPathwayAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Metabolite ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:Pathway ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:participates_in ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .
+
+#################################################################
+# REACTION ENRICHMENT SHAPES
+#################################################################
+
+mtr:BiochemicalReactionShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:BiochemicalReaction ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path mtr:rhea_equation ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:rhea_ec_number ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:ReactionToParticipantAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:ReactionToParticipantAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:BiochemicalReaction ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Metabolite ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:has_participant ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .
+
+#################################################################
+# DRUG / TARGET / DISEASE ENRICHMENT SHAPES
+#################################################################
+
+mtr:DrugToGeneAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:DrugToGeneAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:Drug ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path mtr:max_clinical_phase ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 4 ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:GeneToConditionAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:GeneToDiseaseOrPhenotypicFeatureAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:DiseaseOrPhenotypicFeature ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:gene_associated_with_condition ;
+    ] ;
+    sh:property [
+        sh:path mtr:ot_genetics_score ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] .
+
+mtr:TargetSafetyLiabilityAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:TargetSafetyLiabilityAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Gene ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:DiseaseOrPhenotypicFeature ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue mtr:has_safety_liability ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .
+
+#################################################################
+# GWAS ENRICHMENT SHAPES
+#################################################################
+
+mtr:GwasVariantToConditionAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass biolink:VariantToDiseaseAssociation ;
+    sh:targetClass biolink:VariantToPhenotypicFeatureAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:SNP ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class biolink:DiseaseOrPhenotypicFeature ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:genetically_associated_with ;
+    ] ;
+    sh:property [
+        sh:path biolink:p_value ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:ci_lower ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] ;
+    sh:property [
+        sh:path mtr:ci_upper ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:double ;
+        sh:severity sh:Warning ;
+    ] .
+#################################################################
+# HMDB LOCATION ENRICHMENT SHAPES
+#################################################################
+
+mtr:MetaboliteLocationAssociationShape
+    a sh:NodeShape ;
+    sh:targetClass mtr:MetaboliteLocationAssociation ;
+    sh:property [
+        sh:path biolink:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class mtr:Metabolite ;
+    ] ;
+    sh:property [
+        sh:path biolink:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:or (
+            [ sh:class biolink:CellularComponent ]
+            [ sh:class biolink:GrossAnatomicalStructure ]
+            [ sh:class biolink:MaterialSample ]
+        ) ;
+    ] ;
+    sh:property [
+        sh:path biolink:predicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue biolink:located_in ;
+    ] ;
+    sh:property [
+        sh:path prov:wasDerivedFrom ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:severity sh:Warning ;
+    ] .

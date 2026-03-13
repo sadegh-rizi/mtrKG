@@ -1,0 +1,71 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX biolink: <https://w3id.org/biolink/vocab/>
+PREFIX mtr: <https://metabolite-ratio-app.unil.ch/rqtl/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+SELECT ?dataset_source (COUNT(DISTINCT ?entity) AS ?contribution_count)
+WHERE {
+  {
+    # 1. rQTL
+    { ?entity rdf:type mtr:VariantToMetaboliteRatioAssociation }
+    UNION
+    { ?entity rdf:type mtr:CausalAssessment }
+    BIND("rQTL" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 2. GWAS Catalog
+    ?entity mtr:ci_lower ?any1 .
+    BIND("GWAS Catalog" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 3. OpenTargets
+    { ?entity mtr:ot_genetics_score ?any2 }
+    UNION
+    { ?entity rdf:type mtr:TargetSafetyLiabilityAssociation }
+    BIND("OpenTargets" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 4. HMDB
+    { ?entity rdf:type mtr:MetaboliteLocationAssociation }
+    UNION
+    { ?entity mtr:hmdb_id ?any3 }
+    BIND("HMDB" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 5. RHEA (Matches Class, Edge, OR Provenance URL)
+    { ?entity rdf:type biolink:ReactionToParticipantAssociation }
+    UNION
+    { ?entity rdf:type mtr:BiochemicalReaction }
+    UNION
+    { ?entity prov:wasDerivedFrom <https://www.rhea-db.org/> }
+    BIND("Rhea" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 6. Reactome
+    ?entity mtr:reactome_source_type ?any4 .
+    BIND("Reactome" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 7. Ensembl
+    ?entity rdf:type mtr:VariantToRegulatoryFeatureOverlapAssociation .
+    BIND("Ensembl" AS ?dataset_source)
+  }
+  UNION
+  {
+    # 8. STRING (Matches Class, Score property, OR Provenance URL)
+    { ?entity rdf:type biolink:PairwiseGeneToGeneInteraction }
+    UNION
+    { ?entity mtr:string_combined_score ?any5 }
+    UNION
+    { ?entity prov:wasDerivedFrom <https://string-db.org/> }
+    BIND("STRING" AS ?dataset_source)
+  }
+}
+GROUP BY ?dataset_source
+ORDER BY DESC(?contribution_count)

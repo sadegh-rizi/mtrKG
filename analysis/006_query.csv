@@ -1,0 +1,7 @@
+gene_name,metabolite_name,pathway_name
+SLC22A5,acetylcarnitine (c2),Carnitine shuttle
+SLC22A5,palmitoylcarnitine (c16),Carnitine shuttle
+BBOX1,deoxycarnitine,Carnitine synthesis
+ENPP6,choline phosphate,Glycerophospholipid catabolism
+TMEM258,cholesterol,Maturation of DENV proteins
+SLC22A3,carnitine,SLC-mediated transport of organic cations

@@ -1,0 +1,11 @@
+snp,causalGeneLabel,ratioLabel,p_value,dataset
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,2-aminooctanoate to n-acetyl-2-aminooctanoate*,0e+00,GTEx
+http://identifiers.org/dbsnp/rs6752270,ALMS1 RNA,"n2,n5-diacetylornithine to n-delta-acetylornithine",0e+00,GTEx
+http://identifiers.org/dbsnp/rs7572565,ALMS1 RNA,"n2,n5-diacetylornithine to n-delta-acetylornithine",0e+00,GTEx
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,methionine sulfone to n-acetylglutamine,0e+00,GTEx
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,methionine sulfone to n-acetyl-1-methylhistidine*,0e+00,GTEx
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,n-acetyl-2-aminooctanoate* to n-delta-acetylornithine,0e+00,GTEx
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,n-acetylleucine to n-delta-acetylornithine,0e+00,GTEx
+http://identifiers.org/dbsnp/rs7573275,ALMS1 RNA,n-acetyltyrosine to n-delta-acetylornithine,0e+00,GTEx
+http://identifiers.org/dbsnp/rs58242989,ALMS1 RNA,n-acetylglutamine to n-delta-acetylornithine,0e+00,GTEx
+http://identifiers.org/dbsnp/rs62149622,ALMS1 RNA,n-acetylglutamine to n-delta-acetylornithine,0e+00,GTEx
