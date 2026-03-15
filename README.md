@@ -71,19 +71,19 @@ mtrKG is a **Metabolite Ratio Knowledge Graph** project that integrates local rQ
 
 ## Setup
 
-There is currently no pinned `requirements.txt` in the repository root. A practical environment for the current code typically needs:
+The repository includes a root `requirements.txt` that centralizes Python dependencies used by the main scripts and notebooks.
 
-- Python
-- `rdflib`, `pandas`, `requests`, `SPARQLWrapper`
-- `pyshacl` (validation)
-- `numpy`, `scipy`, `torch`, `pykeen` (drug prediction)
-- `tqdm` (notebook progress bars)
-- `networkx`, `matplotlib` (utility visualization notebook)
+Included package groups:
 
-Example installation:
+- Core KG build/query stack: `rdflib`, `pandas`, `requests`, `SPARQLWrapper`, `urllib3`
+- Validation workflow: `pyshacl`
+- Drug repurposing workflow: `numpy`, `scipy`, `torch`, `pykeen`
+- Notebook/visualization utilities: `tqdm`, `networkx`, `matplotlib`, `pyvis`, `qrcode[pil]`
+
+Install with:
 
 ```bash
-pip install rdflib pandas requests SPARQLWrapper pyshacl numpy scipy torch pykeen tqdm networkx matplotlib
+pip install -r requirements.txt
 ```
 
 ## Building the KG

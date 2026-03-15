@@ -1,0 +1,22 @@
+# Core KG construction and querying
+rdflib
+pandas
+requests
+SPARQLWrapper
+urllib3
+
+# Validation (if using local PySHACL workflows)
+pyshacl
+
+# Drug repurposing workflow (predict_drugs.py)
+numpy
+scipy
+torch
+pykeen
+
+# Notebook and visualization utilities
+tqdm
+networkx
+matplotlib
+pyvis
+qrcode[pil]
